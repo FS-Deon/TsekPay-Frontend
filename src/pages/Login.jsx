@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 
 function Login() {
@@ -103,3 +104,17 @@ function Login() {
 }
 
 export default Login;
+=======
+import React from 'react'
+
+function Login() {
+  return (
+    <div>
+        Login
+    </div>
+    
+  )
+}
+
+export default Login
+>>>>>>> tony
