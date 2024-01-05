@@ -73,7 +73,7 @@ function Login() {
                   value={showPassword}
                   onChange={() => setShowPassword((prev) => !prev)}
                 />
-                <label className="text-sm" for="check">
+                <label className="text-sm" htmlFor="check">
                   Show Password
                 </label>
               </div>
