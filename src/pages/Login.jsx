@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
 
 function Login() {
@@ -45,7 +44,7 @@ function Login() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-left justify-between">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -79,10 +78,7 @@ function Login() {
                 </label>
               </div>
             </div>
-            <a
-              href="/forgot-password"
-              className="text-sm text-blue-800 hover:underline"
-            >
+            <a href="#" className="text-sm left text-blue-800 hover:underline">
               Forgot password?
             </a>
           </div>
@@ -95,8 +91,6 @@ function Login() {
               Log in
             </button>
           </div>
-
-          <h1>{loginStatus}</h1>
         </div>
       </div>
     </>
@@ -104,17 +98,3 @@ function Login() {
 }
 
 export default Login;
-=======
-import React from 'react'
-
-function Login() {
-  return (
-    <div>
-        Login
-    </div>
-    
-  )
-}
-
-export default Login
->>>>>>> tony
