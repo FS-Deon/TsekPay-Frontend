@@ -22,7 +22,9 @@ function Dashboard() {
               <p className="font-regular text-xl">16 Days Ago</p>
             </div>
 
-            <button className="btn btn-outline">Default</button>
+            <button className="mx-2 px-3 btn btn-outline border-2 border-gray-200">
+              Upload File
+            </button>
           </div>
 
           <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg dark:border-gray-700 flex flex-col items-center justify-center">
