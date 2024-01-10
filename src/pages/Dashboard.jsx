@@ -7,7 +7,7 @@ function Dashboard() {
       <Sidebar />
       <div className="p-4 sm:ml-64 flex flex-col container">
         {/*greetings*/}
-        <div className="mb-1 text-xl">January 8, 2024</div>
+        <div className="mx-2 mb-1 text-xl">January 8, 2024</div>
         <div className="m-2 text-3xl font-bold">
           <p>Good morning User</p>
         </div>
