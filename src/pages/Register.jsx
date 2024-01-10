@@ -1,9 +1,18 @@
 import React from 'react'
+import Sidebar from '../components/Sidebar.jsx'
+import BackButton from '../components/BackButton.jsx'
 
 function Register() {
   return (
-    <div>Register</div>
+    <>
+  
+    <Sidebar>
+    </Sidebar>
+  
+
+  </>
   )
+
 }
 
-export default Register
+export default Register;
