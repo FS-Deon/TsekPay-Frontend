@@ -56,7 +56,7 @@ function Sidebar() {
             <div>
 
             {/* to change */}
-            <Link to='/login'>
+            <Link to='/'>
               <a className= "mb-12 flex items-center p-1 text-gray-900 rounded-lg hover:text-black hover:bg-white">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +112,7 @@ function Sidebar() {
                 </li>
     
                 <li>
-                  <Link to="/HRAnnouncements">
+                  <Link to="/non-recurring">
                     <a  
                       href="#"
                       class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
@@ -130,7 +130,7 @@ function Sidebar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/hrAttendance">
+                  <Link to="/register">
                     <a
                       href="#"
                       class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700 group"
@@ -145,7 +145,7 @@ function Sidebar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/hrTraining">
+                  <Link to="/activity-logs">
                     <a
                       href="#"
                       class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
@@ -163,7 +163,7 @@ function Sidebar() {
                 </li>
                 <li>
                   <a
-                    //href="#"
+                    href="/login"
                     class="mt-12 flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
                   >
                     <svg
