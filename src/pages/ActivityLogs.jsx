@@ -9,7 +9,7 @@ function ActivityLogs() {
         <div className="m-2 text-3xl font-bold">
           <p>Activity Logs</p>
         </div>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg dark:border-gray-700">
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg">
           <div className="overflow-x-auto">
             <table className="table">
               {/* head */}
