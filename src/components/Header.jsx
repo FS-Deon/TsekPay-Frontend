@@ -1,4 +1,12 @@
 function Header() {
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  const today = new Date();
+  const dateToday = today.toLocaleString("en-US", options);
   return (
     <>
       <div className="bg-[#4A6E7E] flex flex-row justify-between">
@@ -10,7 +18,7 @@ function Header() {
             <div className="text-lg text-white font-bold">
               <p>Good morning User</p>
             </div>
-            <div className="text-lg text-[#AAE2EC]">January 8, 2024</div>
+            <div className="text-lg text-[#AAE2EC] font-bold">{dateToday}</div>
           </div>
         </div>
         <div className="mx-5 my-1 flex flex-col">
