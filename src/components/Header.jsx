@@ -24,9 +24,7 @@ function Header() {
         <div className="mx-5 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
           <select className="select select-bordered w-full max-w-xs px-20">
-            <option disabled selected>
-              Fullsuite
-            </option>
+            <option disabled>Fullsuite</option>
             <option>Han Solo</option>
             <option>Greedo</option>
           </select>
