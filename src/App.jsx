@@ -8,7 +8,6 @@ import TsekpayRun from "/src/pages/TsekpayRun.jsx";
 import NonRecurring from "/src/pages/NonRecurring.jsx";
 import ActivityLogs from "/src/pages/ActivityLogs.jsx";
 import SelectOrg from "./pages/SelectOrg.jsx";
-import TsekpayRun from "./pages/TsekpayRun.jsx";
 
 function App() {
   return (
@@ -24,7 +23,7 @@ function App() {
             <Route path="/non-recurring" element={<NonRecurring />} />
             <Route path="/activity-logs" element={<ActivityLogs />} />
             <Route path="/select-orgnazation" element={<SelectOrg />} />
-            <Route path="/tsekpay-run" element={<TsekpayRun />} />
+            
           </Routes>
         </BrowserRouter>
       </div>
