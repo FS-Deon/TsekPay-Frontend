@@ -105,7 +105,7 @@ function Sidebar() {
 
             <li>
               <Link
-                to="/upload-record"
+                to="/tsekpay-run"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -123,7 +123,7 @@ function Sidebar() {
                 </svg>
 
                 <span className="flex-1 ml-3 whitespace-nowrap text-white">
-                  Upload Records
+                  Tsekpay Run
                 </span>
                 <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-800 rounded-full dark:bg-gray-700 dark:text-gray-300"></span>
               </Link>
