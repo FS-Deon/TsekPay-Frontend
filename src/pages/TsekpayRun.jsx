@@ -96,9 +96,9 @@ function TsekpayRun() {
 
       <div className="sm:ml-64 flex flex-col">
         <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-            <NoRecord></NoRecord>
-          </div>
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          <NoRecord></NoRecord>
+        </div>
       </div>
 
       {/* <div className="sm:ml-64 flex flex-col">
