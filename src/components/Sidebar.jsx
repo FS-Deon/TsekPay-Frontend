@@ -9,7 +9,7 @@ function Sidebar() {
         data-drawer-toggle="default-sidebar"
         aria-controls="default-sidebar"
         type="button"
-        className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200"
       >
         <span className="sr-only">Open sidebar</span>
         <svg
@@ -56,13 +56,13 @@ function Sidebar() {
                     {/* to change */}
                     <Link
                       to="/login"
-                      className="mb-12 flex items-center p-1 text-gray-900 rounded-lg hover:text-black hover:bg-white"
+                      className="mb-12 flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="white"
-                        className="w-5 h-5"
+                        className="w-5 h-5 "
                       >
                         <path
                           fillRule="evenodd"
@@ -79,7 +79,7 @@ function Sidebar() {
             <li>
               <Link
                 to="/dashboard"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +106,7 @@ function Sidebar() {
             <li>
               <Link
                 to="/tsekpay-run"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -125,13 +125,13 @@ function Sidebar() {
                 <span className="flex-1 ml-3 whitespace-nowrap text-white">
                   Tsekpay Run
                 </span>
-                <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-800 rounded-full dark:bg-gray-700 dark:text-gray-300"></span>
+                <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-800 rounded-full"></span>
               </Link>
             </li>
             <li>
               <Link
                 to="/register"
-                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@ function Sidebar() {
             <li>
               <Link
                 to="/activity-logs"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -168,13 +168,13 @@ function Sidebar() {
                 </span>
               </Link>
               <Link
-                to="/activity-logs"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                to="/manage-pay-items"
+                className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
                 <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
-                fill="currentColor" 
+                fill="white" 
                 class="w-6 h-6">
                 <path 
                 d="M15 3.75H9v16.5h6V3.75ZM16.5 20.25h3.375c1.035 0 1.875-.84 1.875-1.875V5.625c0-1.036-.84-1.875-1.875-1.875H16.5v16.5ZM4.125 3.75H7.5v16.5H4.125a1.875 1.875 0 0 1-1.875-1.875V5.625c0-1.036.84-1.875 1.875-1.875Z" />
@@ -188,12 +188,13 @@ function Sidebar() {
             </li>
 
             <Link
-                to="/activity-logs"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                to="/manage-organizations"
+                className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-800 group"
               >
                 <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" fill="currentColor" 
+                viewBox="0 0 24 24" 
+                fill="white0" 
                 class="w-6 h-6">
                 <path 
                 fill-rule="evenodd" 
@@ -207,7 +208,7 @@ function Sidebar() {
             <li>
               <Link
                 to="/login"
-                className="mt-12 flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 group"
+                className="mt-12 flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-800 group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
