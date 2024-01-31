@@ -193,7 +193,7 @@ function Sidebar() {
                 <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
-                fill="white0" 
+                fill="white" 
                 class="w-6 h-6">
                 <path 
                 fill-rule="evenodd" 
