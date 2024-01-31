@@ -1,15 +1,74 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import NoRecord from "../components/NoRecord";
+import { useState } from "react";
+import * as XLSX from "xlsx";
 
 function TsekpayRun() {
+  // onchange states
+  const [excelFile, setExcelFile] = useState(null);
+  const [typeError, setTypeError] = useState(null);
+
+  // submit state
+  const [excelData, setExcelData] = useState(null);
+
+  // onchange event
+  const handleFile = (e) => {
+    let fileTypes = [
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/csv",
+    ];
+    let selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile && fileTypes.includes(selectedFile.type)) {
+        setTypeError(null);
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(selectedFile);
+        reader.onload = (e) => {
+          setExcelFile(e.target.result);
+        };
+      } else {
+        setTypeError("Please select only excel file types");
+        setExcelFile(null);
+      }
+    } else {
+      console.log("Please select your file");
+    }
+  };
+
+  // submit event
+  const handleFileSubmit = (e) => {
+    e.preventDefault();
+    if (excelFile !== null) {
+      const workbook = XLSX.read(
+        excelFile,
+
+        { type: "buffer" }
+      );
+      const worksheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[worksheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+      setExcelData(data.slice(0, 13));
+    }
+  };
   return (
     <>
       <Sidebar />
       <div className="sm:ml-64 flex flex-col">
         <Header />
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+
+        {typeError && (
+          <div className="alert alert-danger" role="alert">
+            {typeError}
+          </div>
+        )}
+
+        <form
+          className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10"
+          onSubmit={handleFileSubmit}
+        >
           <div className="flex flex-col container w-[20%] m-5">
             <label
               for="uploadFile1"
@@ -30,7 +89,13 @@ function TsekpayRun() {
                 />
               </svg>
               Upload Payroll File
-              <input type="file" id="uploadFile1" class="hidden" />
+              <input
+                type="file"
+                id="uploadFile1"
+                className="form-control hidden"
+                required
+                onChange={handleFile}
+              />
             </label>
 
             <button
@@ -47,7 +112,7 @@ function TsekpayRun() {
             </button>
           </div>
           <div className="divider divider-horizontal"></div>
-          <div className="container w-[80%] flex flex-col">
+          <div className="container flex flex-col w-[80%]">
             <h1 className="text-base font-bold">Period Covered</h1>
             <div className="flex flex-row">
               <label className="form-control w-full max-w-xs mx-3">
@@ -91,11 +156,54 @@ function TsekpayRun() {
               <button className="btn bg-[#1EBE58] text-white">Save</button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
 
       <div className="sm:ml-64 flex flex-col">
         <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
+        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          {excelData ? (
+            <div className="overflow-x-auto overflow-scroll h-[55vh]">
+              <table className="table ">
+                {/* head */}
+                <thead className="bg-[#4A6E7E] text-white sticky top-0">
+                  <tr>
+                    <th>
+                      <label>
+                        <input type="checkbox" className="checkbox" />
+                      </label>
+                    </th>
+                    {Object.keys(excelData[0]).map((key) => (
+                      <th key={key}>{key}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* row 1 */}
+                  {excelData.map((individualExcelData, index) => (
+                    <tr key={index}>
+                      <th>
+                        <label>
+                          <input
+                            type="checkbox"
+                            className="checkbox bg-white"
+                          />
+                        </label>
+                      </th>
+                      {Object.keys(individualExcelData).map((key) => (
+                        <td key={key}>{individualExcelData[key]}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <NoRecord></NoRecord>
+          )}
+        </div>
+      </div>
+      <div className="sm:ml-64 flex flex-col">
         <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           <NoRecord></NoRecord>
         </div>
