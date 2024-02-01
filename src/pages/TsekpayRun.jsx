@@ -164,7 +164,7 @@ function TsekpayRun() {
         <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           {excelData ? (
             <div className="overflow-x-auto overflow-scroll h-[55vh]">
-              <table className="table ">
+              <table className="table table-xs">
                 {/* head */}
                 <thead className="bg-[#4A6E7E] text-white sticky top-0">
                   <tr>
@@ -204,10 +204,10 @@ function TsekpayRun() {
         </div>
       </div>
       <div className="sm:ml-64 flex flex-col">
-        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-          <div className="bg-[#4A6E7E] text-white w-full flex flex-col">
+        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
+          <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
             <h1 className="font-bold text-2xl py-3 mx-3">Employee Name</h1>
-            <div className="flex flex-row">
+            <div className="flex flex-row my-3">
               <h2 className="mx-4">
                 <strong>Email: </strong>employee@fullsuite
               </h2>
@@ -217,6 +217,89 @@ function TsekpayRun() {
               <h2 className="mx-4">
                 <strong>Ordinary Rate: </strong>000000000000
               </h2>
+            </div>
+          </div>
+          <div className="flex flex-row">
+            <div className="w-[25%]">
+              <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="font-bold mx-3 mt-3">Earnings</h1>
+                <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+              </div>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="mx-3 mt-3">Basic Pay</h1>
+                <h1 className="mx-3 mt-3">9,000</h1>
+              </div>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="font-bold mx-3 mt-3">Total Earnings</h1>
+                <h1 className="mx-3 mt-3">9,000</h1>
+              </div>
+              <hr className="mt-1"></hr>
+
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="font-bold mx-3 mt-3">Deductions</h1>
+                <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+              </div>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="mx-3 mt-3">Company Deductions</h1>
+                <h1 className="mx-3 mt-3">2,954</h1>
+              </div>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="mx-3 mt-3">Late & Absences</h1>
+                <h1 className="mx-3 mt-3">750</h1>
+              </div>
+              <hr className="mt-1"></hr>
+              <div className="flex flex-row justify-between">
+                <h1 className="font-bold mx-3 mt-3">Total Deduction</h1>
+                <h1 className="mx-3 mt-3">3,704</h1>
+              </div>
+              <hr className="mt-1"></hr>
+            </div>
+            <div className="divider divider-horizontal"></div>
+            <div className="overflow-x-auto w-[75%]">
+              <table className="table">
+                {/* head */}
+                <thead>
+                  <tr>
+                    <th>Pay Items</th>
+                    <th>Rate</th>
+                    <th>QTY</th>
+                    <th>Ammount</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* row 1 */}
+                  <tr>
+                    <th>Basic Pay</th>
+                    <td>10,000.00</td>
+                    <td>1</td>
+                    <td>10,000.00</td>
+                    <td>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
