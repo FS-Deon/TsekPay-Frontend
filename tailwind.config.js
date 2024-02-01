@@ -9,5 +9,15 @@ export default {
   plugins: [daisyui],
   daisyui: {
     themes: ["light"],
+
+      
   },
+  theme: {
+    extend: {
+      backgroundImage: {
+        'login-bg': "url('/TPLogin.jpeg')"
+      }
+    }
+  }
+
 };
