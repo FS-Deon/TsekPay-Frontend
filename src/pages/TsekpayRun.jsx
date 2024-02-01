@@ -69,7 +69,7 @@ function TsekpayRun() {
           className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10"
           onSubmit={handleFileSubmit}
         >
-          <div className="flex flex-col container w-[20%] m-5">
+          <div className="flex flex-col container w-[25%] m-5">
             <label
               for="uploadFile1"
               class="btn bg-[#426E80] btn-wide shadow-md px-4 m-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
@@ -112,7 +112,7 @@ function TsekpayRun() {
             </button>
           </div>
           <div className="divider divider-horizontal"></div>
-          <div className="container flex flex-col w-[80%]">
+          <div className="container flex flex-col w-[75%]">
             <h1 className="text-base font-bold">Period Covered</h1>
             <div className="flex flex-row">
               <label className="form-control w-full max-w-xs mx-3">
@@ -204,8 +204,21 @@ function TsekpayRun() {
         </div>
       </div>
       <div className="sm:ml-64 flex flex-col">
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-          <NoRecord></NoRecord>
+        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          <div className="bg-[#4A6E7E] text-white w-full flex flex-col">
+            <h1 className="font-bold text-2xl py-3 mx-3">Employee Name</h1>
+            <div className="flex flex-row">
+              <h2 className="mx-4">
+                <strong>Email: </strong>employee@fullsuite
+              </h2>
+              <h2 className="mx-4">
+                <strong>Tax Number: </strong>000000000000
+              </h2>
+              <h2 className="mx-4">
+                <strong>Ordinary Rate: </strong>000000000000
+              </h2>
+            </div>
+          </div>
         </div>
       </div>
 

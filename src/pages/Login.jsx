@@ -9,62 +9,81 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   return (
     <>
-      <div class="w-screen min-h-screen">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex flex-col shadow lg:w-[450px] w-[350px]">
-            <h1 className="text-[20px] font-medium mx-8 my-6">Login</h1>
-            <div class="relative z-0 mx-10 my-5">
+       <div className="flex flex-row justify-center">
+        <div className="flex-1 bg-login-bg bg-no-repeat bg-cover bg-center relative sm:md:hidden lg:inline-block">
+          <div className="absolute h-screen w-full bg-gradient-to-r from-[#ffffff00] to-[#007184]"></div>
+            <span className="p-2 bottom-0 absolute text-[10px] text-slate-200"><a href="https://www.freepik.com/free-photo/modern-office-space-with-desktops-with-modern-computers-created-with-generative-ai-technology_40871274.htm#query=office&position=0&from_view=search&track=sph&uuid=069dd47e-247d-4a92-9a8e-468f946c5d4a">Image by atlascompany</a> on Freepik</span>
+        </div>
+        <div className="flex flex-col gap-8 justify-center items-center h-screen bg-[#007184] w-full md:w-full lg:w-2/5">
+          <img src="../logo-full.svg" alt="FullSuite logo" className="h-20" />
+          <div className="card bg-base-100 shadow-xl p-5 w-80">
+            <h1 className="font-bold text-2xl text-center">Tsekpay  </h1>
+            <div className="flex flex-col justify-center items-center gap-3 mt-7 mb-5">
               <input
+                name="email"
                 type="email"
-                id="floating_standard"
-                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
+                autoComplete="email"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+    
+                className="input input-bordered w-full border-gray-300 focus:outline-none"
+                placeholder="Work Email"
               />
-              <label
-                for="floating_standard"
-                class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-              >
-                Enter your email address
-              </label>
-            </div>
-            <div class="relative z-0 mx-10 my-5">
-              <input
-                type="email"
-                id="floating_standard"
-                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-              />
-              <label
-                for="floating_standard"
-                class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-              >
-                Enter your password
-              </label>
-            </div>
-
-            <p className="text-[13px] text-[#002C74] mx-10">
-              Forgot your password?
-            </p>
-            <div className="flex flex-col justify-center items-center py-5">
-              <div class="flex items-center mb-3">
+              <div className="flex flex-row justify-center items-center w-full gap-1 border-gray-300 border rounded-lg pr-1">
                 <input
-                  id="default-checkbox"
-                  type="checkbox"
-                  value=""
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 dark:bg-gray-700"
+                  type="password"
+                  name="password"
+                  id="password"
+                  className="input input-bordered w-full border-transparent focus:outline-none"
+                  placeholder="Password"
+                  value={password}
+                  autoComplete="current-password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+             
                 />
-                <label for="default-checkbox" class="ms-2 text-[13px]">
-                  Stay signed in for a week
-                </label>
+                <button
+                  className="btn btn-circle btn-ghost btn-sm"
+         
+                >
+          
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+             
+                </button>
               </div>
-              <button className="btn bg-[#5D93F0] w-[60%] btn-sm text-white">
-                Continue
-              </button>
-              <p className="text-[13px] py-2">
-                Don't have an account yet?{" "}
-                <a className="link text-[#002C74] mx-1">Sign up</a>
-              </p>
+              <a
+                href="/forgot-password"
+                className="text-[12px] text-[#007184] font-bold text-left w-full"
+              >
+                Forgot password?
+              </a>
             </div>
+            <input
+              type="submit"
+              value="Login"
+              className="btn normal-case bg-[#007184] text-[#FFFFFF] hover:bg-[#14383E]"
+       
+            />
           </div>
         </div>
       </div>
