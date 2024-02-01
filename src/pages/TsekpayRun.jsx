@@ -204,8 +204,21 @@ function TsekpayRun() {
         </div>
       </div>
       <div className="sm:ml-64 flex flex-col">
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-          <NoRecord></NoRecord>
+        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          <div className="bg-[#4A6E7E] text-white w-full flex flex-col">
+            <h1 className="font-bold text-2xl py-3 mx-3">Employee Name</h1>
+            <div className="flex flex-row">
+              <h2 className="mx-4">
+                <strong>Email: </strong>employee@fullsuite
+              </h2>
+              <h2 className="mx-4">
+                <strong>Tax Number: </strong>000000000000
+              </h2>
+              <h2 className="mx-4">
+                <strong>Ordinary Rate: </strong>000000000000
+              </h2>
+            </div>
+          </div>
         </div>
       </div>
 
