@@ -164,7 +164,7 @@ function TsekpayRun() {
         <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           {excelData ? (
             <div className="overflow-x-auto overflow-scroll h-[55vh]">
-              <table className="table table-xs">
+              <table className="table table-xl">
                 {/* head */}
                 <thead className="bg-[#4A6E7E] text-white sticky top-0">
                   <tr>

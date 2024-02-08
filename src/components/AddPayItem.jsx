@@ -26,7 +26,7 @@ function AddPayItem() {
 
       <dialog id="anpi" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className=""></h3>
+          <h1 className="text-xl font-bold ">Add New Pay Item</h1>
           {/* First Name */}
           <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
             <div className="label">
@@ -52,7 +52,7 @@ function AddPayItem() {
             </div>
             <textarea
               className="textarea textarea-bordered"
-              placeholder="Bio"
+              placeholder="Describe this pay item"
             ></textarea>
           </label>
 
@@ -93,9 +93,23 @@ function AddPayItem() {
               <span className="label-text">Visibility</span>
             </div>
             <div className="flex flex-row">
-              <input type="radio" name="radio-1" className="radio" checked /> On
-              Payslip
-              <input type="radio" name="radio-1" className="radio" /> Hidden
+              <div className="form-control">
+                <label className="label cursor-pointer">
+                  <span className="label-text px-2">On Payslip</span>
+                  <input
+                    type="radio"
+                    name="radio-10"
+                    className="radio-xs"
+                    checked
+                  />
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="label cursor-pointer">
+                  <span className="label-text px-2">Hidden</span>
+                  <input type="radio" name="radio-10" className="radio-xs" />
+                </label>
+              </div>
             </div>
           </label>
           <div className="modal-action">
