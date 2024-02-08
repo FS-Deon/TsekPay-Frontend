@@ -61,93 +61,84 @@ function ManageOrgs() {
 
         <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
           <h1 className=" text-xl font-bold mx-3">Organizations</h1>
-          <table class="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg">
-            <thead>
-              <tr>
-                <th class="border-2 border-gray-200 border-solid font-bold text-lg py-2">
-                  Logo
-                </th>
-                <th class="border-2 border-gray-200 border-solid font-bold text-lg py-2">
-                  Name
-                </th>
-                <th class="border-2 border-gray-200 border-solid  font-bold text-lg py-2">
-                  Description
-                </th>
-                <th class="border-2 border-gray-200 border-solid "></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px] mx-3"
-                    alt="logo"
-                  />
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2 mx-3">
-                  <h1 className="mx-3">Fullsuite</h1>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <p className="mx-3">
+          <div className="overflow-x-auto">
+            <table className="table">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th>Logo</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* row 1 */}
+                <tr>
+                  <th>
                     {" "}
+                    <img
+                      src="../Fs-logo.png"
+                      className="h-[100px] w-[100px]"
+                      alt="logo"
+                    />
+                  </th>
+                  <td>Fullsuite</td>
+                  <td>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     Mauris molestie est magna, vitae fringilla massa semper id.
-                  </p>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px] mx-3"
-                    alt="logo"
-                  />
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2 mx-3">
-                  <h1 className="mx-3">Fullsuite</h1>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <p className="mx-3">
+                  </td>
+                  <td className="">
                     {" "}
+                    <a className="link mx-3">Edit</a>{" "}
+                    <a className="link mx-3">Delete</a>
+                  </td>
+                </tr>
+                {/* row 1 */}
+                <tr>
+                  <th>
+                    {" "}
+                    <img
+                      src="../Fs-logo.png"
+                      className="h-[100px] w-[100px]"
+                      alt="logo"
+                    />
+                  </th>
+                  <td>Fullsuite</td>
+                  <td>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     Mauris molestie est magna, vitae fringilla massa semper id.
-                  </p>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px] mx-3"
-                    alt="logo"
-                  />
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2 mx-3">
-                  <h1 className="mx-3">Fullsuite</h1>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <p className="mx-3">
+                  </td>
+                  <td className="">
                     {" "}
+                    <a className="link mx-3">Edit</a>{" "}
+                    <a className="link mx-3">Delete</a>
+                  </td>
+                </tr>
+                {/* row 1 */}
+                <tr>
+                  <th>
+                    {" "}
+                    <img
+                      src="../Fs-logo.png"
+                      className="h-[100px] w-[100px]"
+                      alt="logo"
+                    />
+                  </th>
+                  <td>Fullsuite</td>
+                  <td>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     Mauris molestie est magna, vitae fringilla massa semper id.
-                  </p>
-                </td>
-                <td class="border-2 border-gray-200 border-solid text-lg py-2">
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td className="">
+                    {" "}
+                    <a className="link mx-3">Edit</a>{" "}
+                    <a className="link mx-3">Delete</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>

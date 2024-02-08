@@ -5,53 +5,29 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 
 function TsekpayRun() {
-  // onchange states
-  const [excelFile, setExcelFile] = useState(null);
-  const [typeError, setTypeError] = useState(null);
+  const [data, setData] = useState([]);
 
-  // submit state
-  const [excelData, setExcelData] = useState(null);
-
-  // onchange event
-  const handleFile = (e) => {
-    let fileTypes = [
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "text/csv",
-    ];
-    let selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (selectedFile && fileTypes.includes(selectedFile.type)) {
-        setTypeError(null);
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(selectedFile);
-        reader.onload = (e) => {
-          setExcelFile(e.target.result);
-        };
-      } else {
-        setTypeError("Please select only excel file types");
-        setExcelFile(null);
-      }
-    } else {
-      console.log("Please select your file");
-    }
+  const handleFileUpload = (e) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(e.target.files[0]);
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const parsedData = XLSX.utils.sheet_to_json(sheet);
+      setData(parsedData);
+    };
   };
 
-  // submit event
-  const handleFileSubmit = (e) => {
-    e.preventDefault();
-    if (excelFile !== null) {
-      const workbook = XLSX.read(
-        excelFile,
+  const [selectedRow, setSelectedRow] = useState(null);
 
-        { type: "buffer" }
-      );
-      const worksheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[worksheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-      setExcelData(data.slice(0, 13));
-    }
+  const handleNameClick = (rowData) => {
+    // rowData is the data of the selected row
+    console.log("Selected Row Data:", rowData);
+    setSelectedRow(rowData);
   };
+
   return (
     <>
       <Sidebar />
@@ -59,47 +35,21 @@ function TsekpayRun() {
         <Header />
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
 
-        {typeError && (
-          <div className="alert alert-danger" role="alert">
-            {typeError}
-          </div>
-        )}
-
-        <form
-          className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10"
-          onSubmit={handleFileSubmit}
-        >
+        <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           <div className="flex flex-col container w-[25%] m-5">
-            <label
-              for="uploadFile1"
-              class="btn bg-[#426E80] btn-wide shadow-md px-4 m-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-5 mr-2 fill-white inline"
-                viewBox="0 0 32 32"
-              >
-                <path
-                  d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
-                  data-original="#000000"
-                />
-                <path
-                  d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
-                  data-original="#000000"
-                />
-              </svg>
-              Upload Payroll File
+            <label className="form-control w-full max-w-xs my-2">
+              <div className="label">
+                <span className="label-text">Upload Payroll File</span>
+              </div>
               <input
                 type="file"
-                id="uploadFile1"
-                className="form-control hidden"
-                required
-                onChange={handleFile}
+                accept=".xlsx, .xls, .csv"
+                onChange={handleFileUpload}
+                className="file:px-3 w-[95%] file-input file-input-bordered w-full max-w-xs mx-2 file:bg-[#426E80]"
               />
             </label>
-
             <button
-              className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2  "
+              className="btn bg-[#5C9CB7] btn-wide shadow-md px-5 m-2  "
               disabled="disabled"
             >
               Payslip PDF Format
@@ -153,7 +103,7 @@ function TsekpayRun() {
               />
             </label>
             <div className="flex justify-end">
-              <button className="btn bg-[#1EBE58] text-white">Save</button>
+              <button className="btn bg-[#1EBE58] text-white">Upload</button>
             </div>
           </div>
         </form>
@@ -162,10 +112,9 @@ function TsekpayRun() {
       <div className="sm:ml-64 flex flex-col">
         <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
         <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-          {excelData ? (
+          {data.length > 0 ? (
             <div className="overflow-x-auto overflow-scroll h-[55vh]">
               <table className="table table-xs">
-                {/* head */}
                 <thead className="bg-[#4A6E7E] text-white sticky top-0">
                   <tr>
                     <th>
@@ -173,25 +122,20 @@ function TsekpayRun() {
                         <input type="checkbox" className="checkbox" />
                       </label>
                     </th>
-                    {Object.keys(excelData[0]).map((key) => (
+                    {Object.keys(data[0]).map((key) => (
                       <th key={key}>{key}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {/* row 1 */}
-                  {excelData.map((individualExcelData, index) => (
+                  {data.map((row, index) => (
                     <tr key={index}>
-                      <th>
-                        <label>
-                          <input
-                            type="checkbox"
-                            className="checkbox bg-white"
-                          />
-                        </label>
-                      </th>
-                      {Object.keys(individualExcelData).map((key) => (
-                        <td key={key}>{individualExcelData[key]}</td>
+                      {Object.values(row).map((value, index) => (
+                        <td key={index}>
+                          <button onClick={() => handleNameClick(row)}>
+                            {value}
+                          </button>
+                        </td>
                       ))}
                     </tr>
                   ))}
@@ -203,107 +147,113 @@ function TsekpayRun() {
           )}
         </div>
       </div>
-      <div className="sm:ml-64 flex flex-col">
-        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
-          <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
-            <h1 className="font-bold text-2xl py-3 mx-3">Employee Name</h1>
-            <div className="flex flex-row my-3">
-              <h2 className="mx-4">
-                <strong>Email: </strong>employee@fullsuite
-              </h2>
-              <h2 className="mx-4">
-                <strong>Tax Number: </strong>000000000000
-              </h2>
-              <h2 className="mx-4">
-                <strong>Ordinary Rate: </strong>000000000000
-              </h2>
+      {selectedRow && (
+        <div className="sm:ml-64 flex flex-col">
+          <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
+            <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
+              <h1 className="font-bold text-2xl py-3 mx-3">{selectedRow[2]}</h1>
+              <div className="flex flex-row my-3">
+                <h2 className="mx-4">
+                  <strong>Email: </strong>
+                  {selectedRow[18]}
+                </h2>
+                <h2 className="mx-4">
+                  <strong>Tax Number: </strong>
+                  {selectedRow[6]}
+                </h2>
+                <h2 className="mx-4">
+                  <strong>Ordinary Rate: </strong>000000000000
+                </h2>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row">
-            <div className="w-[25%]">
-              <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="font-bold mx-3 mt-3">Earnings</h1>
-                <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
-              </div>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="mx-3 mt-3">Basic Pay</h1>
-                <h1 className="mx-3 mt-3">9,000</h1>
-              </div>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="font-bold mx-3 mt-3">Total Earnings</h1>
-                <h1 className="mx-3 mt-3">9,000</h1>
-              </div>
-              <hr className="mt-1"></hr>
+            <div className="flex flex-row">
+              <div className="w-[25%]">
+                <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="font-bold mx-3 mt-3">Earnings</h1>
+                  <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">Basic Pay</h1>
+                  <h1 className="mx-3 mt-3">9,000</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="font-bold mx-3 mt-3">Total Earnings</h1>
+                  <h1 className="mx-3 mt-3">9,000</h1>
+                </div>
+                <hr className="mt-1"></hr>
 
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="font-bold mx-3 mt-3">Deductions</h1>
-                <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="font-bold mx-3 mt-3">Deductions</h1>
+                  <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">Company Deductions</h1>
+                  <h1 className="mx-3 mt-3">2,954</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">Late & Absences</h1>
+                  <h1 className="mx-3 mt-3">750</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="font-bold mx-3 mt-3">Total Deduction</h1>
+                  <h1 className="mx-3 mt-3">3,704</h1>
+                </div>
+                <hr className="mt-1"></hr>
               </div>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="mx-3 mt-3">Company Deductions</h1>
-                <h1 className="mx-3 mt-3">2,954</h1>
+              <div className="divider divider-horizontal"></div>
+              <div className="overflow-x-auto w-[75%]">
+                <table className="table">
+                  {/* head */}
+                  <thead>
+                    <tr>
+                      <th>Pay Items</th>
+                      <th>Rate</th>
+                      <th>QTY</th>
+                      <th>Ammount</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* row 1 */}
+                    <tr>
+                      <th>Basic Pay</th>
+                      <td>10,000.00</td>
+                      <td>1</td>
+                      <td>10,000.00</td>
+                      <td>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="mx-3 mt-3">Late & Absences</h1>
-                <h1 className="mx-3 mt-3">750</h1>
-              </div>
-              <hr className="mt-1"></hr>
-              <div className="flex flex-row justify-between">
-                <h1 className="font-bold mx-3 mt-3">Total Deduction</h1>
-                <h1 className="mx-3 mt-3">3,704</h1>
-              </div>
-              <hr className="mt-1"></hr>
-            </div>
-            <div className="divider divider-horizontal"></div>
-            <div className="overflow-x-auto w-[75%]">
-              <table className="table">
-                {/* head */}
-                <thead>
-                  <tr>
-                    <th>Pay Items</th>
-                    <th>Rate</th>
-                    <th>QTY</th>
-                    <th>Ammount</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* row 1 */}
-                  <tr>
-                    <th>Basic Pay</th>
-                    <td>10,000.00</td>
-                    <td>1</td>
-                    <td>10,000.00</td>
-                    <td>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18 18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      <div className="sm:ml-64 flex flex-col"></div>
 
       {/* <div className="sm:ml-64 flex flex-col">
         <NoRecord></NoRecord>
