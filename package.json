@@ -11,6 +11,7 @@
     "start": "npm run dev"
   },
   "dependencies": {
+    "axios": "^1.6.7",
     "daisyui": "^4.5.0",
     "flowbite": "^2.2.1",
     "react": "^18.2.0",
