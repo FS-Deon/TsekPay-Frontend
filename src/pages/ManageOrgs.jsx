@@ -1,7 +1,20 @@
+import React, { useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import Cookies from "js-cookie";
+import { useNavigate } from 'react-router-dom'; 
 
 function ManageOrgs() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userAuthToken = Cookies.get('userAuthToken');
+    if (!userAuthToken) { // Redirect to the login page if there is no cookie
+      navigate('/login');
+    }
+    console.log(userAuthToken);
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
+
   return (
     <>
       <Sidebar />

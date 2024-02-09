@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'; 
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notif, setNotif] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
-  const [showPassword, setShowPassword] = useState(false);;
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userAuthToken = Cookies.get('userAuthToken');
+    if (userAuthToken) { // Redirect to the login page if there is no cookie
+      navigate('/dashboard');
+    }
+    console.log(userAuthToken);
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
+
 
   const handleLogin =  async() => {
     try {
@@ -17,7 +27,7 @@ function Login() {
         password
       });
       axios.defaults.headers.common['Authorization'] = `${response.data.token}`;
-
+      Cookies.set('userAuthToken', `${response.data.token}`, { expires: 7 })
       setLoginStatus("Login successful");
       navigate('/dashboard'); 
     } catch (error) {
