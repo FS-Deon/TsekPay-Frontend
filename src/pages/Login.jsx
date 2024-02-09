@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom'; 
 import axios from "axios";
 
 function Login() {
@@ -6,20 +7,19 @@ function Login() {
   const [password, setPassword] = useState("");
   const [notif, setNotif] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);;
+  const navigate = useNavigate();
 
   const handleLogin =  async() => {
     try {
       const response =  await axios.post("http://localhost:3000/account/authenticate/", {
         email,
-        password,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `${response.data.token}`, 
-        },
+        password
       });
+      axios.defaults.headers.common['Authorization'] = `${response.data.token}`;
+
       setLoginStatus("Login successful");
+      navigate('/dashboard'); 
     } catch (error) {
       setLoginStatus("Login failed");
       console.error("Login error:", error);
