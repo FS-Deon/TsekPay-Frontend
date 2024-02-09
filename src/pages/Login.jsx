@@ -1,12 +1,31 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 function Login() {
-  const [work_email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notif, setNotif] = useState("");
-
   const [loginStatus, setLoginStatus] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin =  async() => {
+    try {
+      const response =  await axios.post("http://localhost:3000/account/authenticate/", {
+        email,
+        password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${response.data.token}`, 
+        },
+      });
+      setLoginStatus("Login successful");
+    } catch (error) {
+      setLoginStatus("Login failed");
+      console.error("Login error:", error);
+    }
+  };
+
   return (
     <>
        <div className="flex flex-row justify-center">
@@ -82,7 +101,7 @@ function Login() {
               type="submit"
               value="Login"
               className="btn normal-case bg-[#007184] text-[#FFFFFF] hover:bg-[#14383E]"
-       
+              onClick={handleLogin}
             />
           </div>
         </div>
