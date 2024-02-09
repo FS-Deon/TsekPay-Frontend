@@ -1,7 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Sidebar() {
+  const handleLogout =  async() => {
+    try {
+      Cookies.remove('userAuthToken');
+      navigate('/dashboard'); 
+    } catch (error) {
+
+    }
+  };
   return (
     <>
       <button
@@ -208,6 +217,7 @@ function Sidebar() {
               <Link
                 to="/login"
                 className="mt-12 flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-800 group"
+                onClick={handleLogout}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
