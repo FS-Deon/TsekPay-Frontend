@@ -1,19 +1,50 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom'; 
+import axios from "axios";
 
 function ManageOrgs() {
   const navigate = useNavigate();
+  const [organizations, setOrganizations] = useState([]);
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userAuthToken');
+    const userAuthToken = Cookies.get('userData');
     if (!userAuthToken) { // Redirect to the login page if there is no cookie
       navigate('/login');
     }
-    console.log(userAuthToken);
+
+    getOrganizations();
+    console.log("done");
   }, []); // Empty dependency array ensures this runs only once when the component mounts
+
+  const getOrganizations = async() => {
+    console.log("Get Companies.");
+    try{
+      const response = await axios.get("http://localhost:3000/company/view", {
+        headers: {
+          Authorization: axios.defaults.headers.common['Authorization'],
+        },
+      });
+      setOrganizations(response.data); // Assuming the response contains an array of organizations
+      console.log(response);
+    } catch(error){
+      console.error("Error: ", error);
+    }
+  };
+
+  const addOrganization = async() => {
+    try{
+      const response =  await axios.post("http://localhost:3000/company", {
+        account_id,
+        commpany_name,
+        address
+      });
+    } catch(error){
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>

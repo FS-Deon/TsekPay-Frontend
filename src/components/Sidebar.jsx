@@ -1,12 +1,16 @@
-import React from "react";
+import React  from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function Sidebar() {
+  const userData = JSON.parse(Cookies.get('userData'));
+  const fullName = userData.first_name + " " + userData.middle_name + " " +userData.last_name;
+  const accountType = userData.account_type;
+
   const handleLogout =  async() => {
     try {
-      Cookies.remove('userAuthToken');
-      navigate('/dashboard'); 
+      Cookies.remove('userData');
+      navigate('/login'); 
     } catch (error) {
 
     }
@@ -56,10 +60,10 @@ function Sidebar() {
 
                 <div className="flex flex-col items-center justify-center">
                   <div className="font-bold text-xl text-white">
-                    Laung Diyan
+                    {fullName}
                   </div>
                   <div className="mb-1 text-center text-white">
-                    Software Engineer
+                    {accountType}
                   </div>
                   <div>
                     {/* to change */}

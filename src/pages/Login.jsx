@@ -12,11 +12,10 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userAuthToken');
+    const userAuthToken = Cookies.get('userData');
     if (userAuthToken) { // Redirect to the login page if there is no cookie
       navigate('/dashboard');
     }
-    console.log(userAuthToken);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
 
@@ -26,8 +25,17 @@ function Login() {
         email,
         password
       });
-      axios.defaults.headers.common['Authorization'] = `${response.data.token}`;
-      Cookies.set('userAuthToken', `${response.data.token}`, { expires: 7 })
+      console.log("respons: ", response);
+      const userData = {
+          token: response.data.token,
+          email: response.data.email,
+          first_name: response.data.first_name,
+          middle_name: response.data.middle_name,
+          last_name: response.data.last_name,
+          account_type: response.data.account_type
+      }
+      axios.defaults.headers.common['Authorization'] = `${userData.token}`;
+      Cookies.set('userData', JSON.stringify(userData), { expires: 99 })
       setLoginStatus("Login successful");
       navigate('/dashboard'); 
     } catch (error) {

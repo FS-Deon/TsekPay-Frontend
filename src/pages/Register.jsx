@@ -8,7 +8,7 @@ function Register() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userAuthToken');
+    const userAuthToken = Cookies.get('userData');
     if (!userAuthToken) { // Redirect to the login page if there is no cookie
       navigate('/login');
     }
