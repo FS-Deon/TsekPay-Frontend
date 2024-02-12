@@ -8,11 +8,11 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userAuthToken');
-    if (!userAuthToken) { // Redirect to the login page if there is no cookie
+    const userData = JSON.parse(Cookies.get('userData'));
+    console.log(userData);
+    if (!userData) { // Redirect to the login page if there is no cookie
       navigate('/login');
     }
-    console.log(userAuthToken);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   return (
