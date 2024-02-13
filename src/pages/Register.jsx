@@ -223,7 +223,7 @@ function Register() {
         </form>
       </div>
 
-      <div>
+      <div className="p-4 sm:ml-64 flex flex-col">
         <h1>Sample Component</h1>
         {data_table ? (
           <table border="1">
@@ -234,6 +234,7 @@ function Register() {
                 <th>First Name</th>
                 <th>Middle Name</th>
                 <th>Last Name</th>
+                <th>Account Type</th>
                 {/* Add more columns based on your data structure */}
               </tr>
             </thead>
@@ -245,6 +246,7 @@ function Register() {
                   <td>{row.first_name}</td>
                   <td>{row.middle_name}</td>
                   <td>{row.last_name}</td>
+                  <td>{row.account_type}</td>
                   {/* Add more cells based on your data structure */}
                 </tr>
               ))}
