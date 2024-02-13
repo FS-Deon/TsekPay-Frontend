@@ -25,7 +25,6 @@ function Login() {
         email,
         password
       });
-      console.log("respons: ", response);
       const userData = {
           token: response.data.token,
           email: response.data.email,
@@ -81,10 +80,7 @@ function Login() {
                   }}
              
                 />
-                <button
-                  className="btn btn-circle btn-ghost btn-sm"
-         
-                >
+                <button className="btn btn-circle btn-ghost btn-sm">
           
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -9,7 +9,6 @@ function Dashboard() {
 
   useEffect(() => {
     const userData = JSON.parse(Cookies.get('userData'));
-    console.log(userData);
     if (!userData) { // Redirect to the login page if there is no cookie
       navigate('/login');
     }
