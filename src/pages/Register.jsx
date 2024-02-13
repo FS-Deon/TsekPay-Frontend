@@ -221,40 +221,43 @@ function Register() {
 
           </div>
         </form>
-      </div>
-
-      <div className="p-4 sm:ml-64 flex flex-col">
-        <h1>Sample Component</h1>
-        {data_table ? (
-          <table border="1">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>Middle Name</th>
-                <th>Last Name</th>
-                <th>Account Type</th>
-                {/* Add more columns based on your data structure */}
-              </tr>
-            </thead>
-            <tbody>
-              {data_table.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{row.email}</td>
-                  <td>{row.first_name}</td>
-                  <td>{row.middle_name}</td>
-                  <td>{row.last_name}</td>
-                  <td>{row.account_type}</td>
-                  {/* Add more cells based on your data structure */}
+        <div className="m-2">
+          <h1 className="text-3xl font-bold tracking-wide">
+            Records
+          </h1>
+        </div>
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
+          {data_table ? (
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Email</th>
+                  <th>First Name</th>
+                  <th>Middle Name</th>
+                  <th>Last Name</th>
+                  <th>Account Type</th>
+                  {/* Add more columns based on your data structure */}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No data available.</p>
-        )}
+              </thead>
+              <tbody>
+                {data_table.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    <td>{row.email}</td>
+                    <td>{row.first_name}</td>
+                    <td>{row.middle_name}</td>
+                    <td>{row.last_name}</td>
+                    <td>{row.account_type}</td>
+                    {/* Add more cells based on your data structure */}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No data available.</p>
+          )}
+        </div>
       </div>
 
     </>
