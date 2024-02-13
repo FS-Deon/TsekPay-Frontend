@@ -16,6 +16,7 @@ function TsekpayRun() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
+      console.log(parsedData);
       setData(parsedData);
     };
   };
@@ -33,7 +34,17 @@ function TsekpayRun() {
       <Sidebar />
       <div className="sm:ml-64 flex flex-col">
         <Header />
-        <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
+        <div className="flex flex-row justify-between">
+          <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
+          <div className="mr-10 my-1 flex flex-col">
+            <h3 className="text-[13px] font-regular text-white">Client</h3>
+            <select className="select select-bordered w-full max-w-xs px-20">
+              <option>Fullsuite</option>
+              <option>Ananda Spa</option>
+              <option>Get Dentals</option>
+            </select>
+          </div>
+        </div>
 
         <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           <div className="flex flex-col container w-[25%] m-5">
@@ -130,6 +141,11 @@ function TsekpayRun() {
                 <tbody>
                   {data.map((row, index) => (
                     <tr key={index}>
+                      <th>
+                        <label>
+                          <input type="checkbox" className="checkbox" />
+                        </label>
+                      </th>
                       {Object.values(row).map((value, index) => (
                         <td key={index}>
                           <button onClick={() => handleNameClick(row)}>
