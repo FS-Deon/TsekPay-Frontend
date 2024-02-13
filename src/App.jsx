@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "/src/pages/Login.jsx";
-import Dashboard from "/src/pages/Dashboard.jsx";
-import Register from "/src/pages/Register.jsx";
-import TsekpayRun from "/src/pages/TsekpayRun.jsx";
-import NonRecurring from "/src/pages/NonRecurring.jsx";
-import ActivityLogs from "/src/pages/ActivityLogs.jsx";
-import SelectOrg from "./pages/SelectOrg.jsx";
-import ManageOrgs from "./pages/ManageOrgs.jsx";
-import PayItems from "./pages/PayItems.jsx";
+import {
+  Login,
+  Dashboard,
+  Register,
+  NonRecurring,
+  ActivityLogs,
+  SelectOrg,
+  TsekpayRun,
+  ManageOrgs,
+  PayItems,
+} from "./pages";
 
 function App() {
   return (
