@@ -4,10 +4,10 @@ import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom'; 
 import axios from "axios";
+
 function Register() {
   const navigate = useNavigate();
-  let response = {};
-  let userData = {};
+  let response;
   const [first_name, setFN] = useState("");
   const [middle_name, setMN] = useState("");
   const [last_name, setLN] = useState("");
@@ -19,16 +19,19 @@ function Register() {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
-    if (!dataLoaded) {
-      userData = JSON.parse(Cookies.get('userData'));
-      if (!userData) {
-        navigate('/login');
-      }
-      viewAccounts();
-      setDataLoaded(true);
+    const userData = Cookies.get('userData');
+    if(!userData){
+      console.log("EMPTY");
+      navigate('/login');
     }
+    viewAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
-  
+
+  // Get token from userData cookie
+  const getToken = () => {
+    const userData = JSON.parse(Cookies.get('userData'));
+    return userData.token;
+  };  
 
   const addAccount = async () => {
     try {
@@ -51,7 +54,7 @@ function Register() {
 
   const viewAccounts = async () => {
     try {
-      const token = userData?.token;
+      const token = getToken();
       response = await axios.get("http://localhost:3000/account/view/", {
         headers: {
           Authorization: token,
@@ -61,14 +64,31 @@ function Register() {
       // Check if response is not null before updating state
       if (rows) {
         setDataTable(rows);
-        console.log("Response:", rows);
-        console.log("Data Table: ", rows);
       }
     } catch (error) {
       console.error("Error viewing accounts: ", error);
     }
   };
   
+  const deleteAccount = async (recordID) => {
+    try{
+      const token = getToken();
+      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (response.status === 200) {
+        viewAccounts();
+        console.log("Record deleted successfully!");
+      } else {
+        console.error("Failed to delete record");
+      }
+    } catch (error){
+      console.error("Error viewing accounts: ", error);
+    }
+  };
 
   return (
     <>
@@ -237,6 +257,8 @@ function Register() {
                   <th>Middle Name</th>
                   <th>Last Name</th>
                   <th>Account Type</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
                   {/* Add more columns based on your data structure */}
                 </tr>
               </thead>
@@ -248,7 +270,22 @@ function Register() {
                     <td>{row.first_name}</td>
                     <td>{row.middle_name}</td>
                     <td>{row.last_name}</td>
-                    <td>{row.account_type}</td>
+                    <td>{row.account_type}</td><td>
+                    <button
+                      // onClick={() => handleEdit(row.id)}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteAccount(row.id)}
+                      className="btn btn-sm btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
                     {/* Add more cells based on your data structure */}
                   </tr>
                 ))}
