@@ -1,19 +1,94 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom'; 
+import axios from "axios";
 
 function Register() {
   const navigate = useNavigate();
+  let response;
+  const [first_name, setFN] = useState("");
+  const [middle_name, setMN] = useState("");
+  const [last_name, setLN] = useState("");
+  const [email, setEmail] = useState("");
+  const [date_of_birth, setDOB] = useState("");
+  const [password, setPassword] = useState("");
+  const [account_type, setAccountType] = useState("");
+  const [data_table, setDataTable] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userData');
-    if (!userAuthToken) { // Redirect to the login page if there is no cookie
+    const userData = Cookies.get('userData');
+    if(!userData){
+      console.log("EMPTY");
       navigate('/login');
     }
-    console.log(userAuthToken);
+    viewAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
+
+  // Get token from userData cookie
+  const getToken = () => {
+    const userData = JSON.parse(Cookies.get('userData'));
+    return userData.token;
+  };  
+
+  const addAccount = async () => {
+    try {
+      response = await axios.post("http://localhost:3000/account/", {
+        email,
+        first_name,
+        middle_name,
+        last_name,
+        date_of_birth,
+        password,
+        account_type,
+      });
+      if (response) {
+        console.log("TRUE");
+      }
+    } catch (error) {
+      console.error("Error adding account: ", error);
+    }
+  };
+
+  const viewAccounts = async () => {
+    try {
+      const token = getToken();
+      response = await axios.get("http://localhost:3000/account/view/", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const rows = response.data.rows;
+      // Check if response is not null before updating state
+      if (rows) {
+        setDataTable(rows);
+      }
+    } catch (error) {
+      console.error("Error viewing accounts: ", error);
+    }
+  };
+  
+  const deleteAccount = async (recordID) => {
+    try{
+      const token = getToken();
+      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (response.status === 200) {
+        viewAccounts();
+        console.log("Record deleted successfully!");
+      } else {
+        console.error("Failed to delete record");
+      }
+    } catch (error){
+      console.error("Error viewing accounts: ", error);
+    }
+  };
 
   return (
     <>
@@ -23,17 +98,15 @@ function Register() {
         <BackButton />
         <div className="m-2">
           <h1 className="text-3xl font-bold tracking-wide">
-            Register New Accountant
+            Register Account
           </h1>
         </div>
         <form>
           {/* Personal Information */}
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg  flex flex-1 flex-col">
-            <h1 className="font-bold">Personal Information</h1>
-
+          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
             <div className="flex flex-col md:flex-row">
               {/* First Name */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
                 <div className="label">
                   <span className="label-text">
                     First Name<span className="text-red-500"> *</span>
@@ -45,11 +118,14 @@ function Register() {
                   maxLength="100"
                   className="input input-bordered w-full "
                   required
+                  onChange={(e) => {
+                    setFN(e.target.value);
+                  }}
                 />
               </label>
 
               {/* Middle Name */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
                 <div className="label">
                   <span className="label-text">
                     Middle Name<span className="text-red-500"> *</span>
@@ -61,14 +137,17 @@ function Register() {
                   maxLength="100"
                   className="input input-bordered w-full "
                   required
+                  onChange={(e) => {
+                    setMN(e.target.value);
+                  }}
                 />
               </label>
 
-              {/* Surname */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+              {/* Last Name */}
+              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
                 <div className="label">
                   <span className="label-text">
-                    Surname<span className="text-red-500"> *</span>
+                    Last Name<span className="text-red-500"> *</span>
                   </span>
                 </div>
                 <input
@@ -77,467 +156,147 @@ function Register() {
                   maxLength="100"
                   className="input input-bordered w-full "
                   required
+                  onChange={(e) => {
+                    setLN(e.target.value);
+                  }}
                 />
               </label>
             </div>
 
-            <div className="flex flex-col md:flex-row">
-              {/* Date of Birth */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Date of Birth<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="dob"
-                  type="date"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-
-              {/* Civil Status */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Civil Status</span>
-                </div>
-                <select
-                  name="civil_status"
-                  className="select select-bordered w-full"
-                  required
-                >
-                  <option value="" hidden>
-                    Select Civil Status
-                  </option>
-                  <option>Single</option>
-                  <option>Married</option>
-                  <option>Widowed</option>
-                </select>
-              </label>
-
-              {/* Sex */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Sex<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <select
-                  name="sex"
-                  className="select select-bordered w-full"
-                  required
-                >
-                  <option value="" hidden>
-                    Select Sex
-                  </option>
-                  <option>Male</option>
-                  <option>Female</option>
-                </select>
-              </label>
-
-              {/* Gender */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Gender</span>
-                </div>
-                <input
-                  name="gender"
-                  type="text"
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
-
-            <div className="flex flex-col md:flex-row">
-              {/* Permanent Address */}
-              <label className="form-control w-full max-w-5xl md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Permanent Address<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  id="p_address"
-                  name="p_address"
-                  type="text"
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
-
-            <div className="flex flex-col md:flex-row">
-              {/* Current Address */}
-              <label className="form-control w-full max-w-5xl md:mb-0 md:mr-4">
-                <div className="label pb-0">
-                  <span className="label-text">
-                    Current Address<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <div className="flex items-center ">
-                  <label className="label cursor-pointer">
-                    <input
-                      id="same_address_checkbox"
-                      name="c_address"
-                      type="checkbox"
-                      value=""
-                      className="checkbox checkbox-sm"
-                    />
-                    <span className="label-text ml-2">
-                      Same as Permanent Address
-                    </span>
-                  </label>
-                </div>
-                <input
-                  id="c_address"
-                  name="c_address"
-                  type="text"
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-            <h1 className="font-bold">Contact Information</h1>
-
+            {/* Date of Birth */}
+            <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+              <div className="label">
+                <span className="label-text">
+                  Date of Birth<span className="text-red-500"> *</span>
+                </span>
+              </div>
+              <input
+                name="dob"
+                type="date"
+                className="input input-bordered w-full"
+                required
+                onChange={(e) => {
+                  setDOB(e.target.value);
+                }}
+              />
+            </label>
             <div className="flex flex-col md:flex-row">
               {/* Personal Email */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
                 <div className="label">
                   <span className="label-text">
-                    Personal Email<span className="text-red-500"> *</span>
+                    Email<span className="text-red-500"> *</span>
                   </span>
                 </div>
                 <input
-                  name="personal_email"
+                  name="email"
                   type="email"
                   className="input input-bordered w-full "
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
                 />
               </label>
-              {/* Contact Number */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+              {/* Password */}
+              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
                 <div className="label">
                   <span className="label-text">
-                    Contact Number<span className="text-red-500"> *</span>
+                    Password <span className="text-red-500"> *</span>
                   </span>
                 </div>
                 <input
-                  name="contact_num"
-                  type="number"
-                  className="input input-bordered w-full "
-                />
-              </label>
-            </div>
-            <div className="divider"></div>
-            <p className="font-semibold text-red-500 text-sm">
-              Emergency Contact Information
-            </p>
-            <div className="flex flex-col md:flex-row">
-              {/* Name */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Name</span>
-                </div>
-                <input
-                  name="emergency_contact_name"
-                  // onChange={handleChange}
+                  name="password"
                   type="text"
                   className="input input-bordered w-full "
+                  required
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                 />
               </label>
 
-              {/* Number */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Contact Number</span>
-                </div>
-                <input
-                  name="emergency_contact_num"
-                  type="number"
-                  className="input input-bordered w-full "
-                />
-              </label>
             </div>
-          </div>
+            {/* Account Type */}
+            <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+              <div className="label">
+                <span className="label-text">Account Type</span>
+              </div>
+              <select
+                name="account_Type"
+                className="select select-bordered w-full"
+                required
+                onChange={(e) => {
+                  setAccountType(e.target.value);
+                }}
+              >
+                <option value="" hidden>
+                  Account Type
+                </option>
+                <option>Manager</option>
+                <option>Accountant</option>
+              </select>
+            </label>
 
-          {/* Employee Information */}
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-            <h1 className="font-bold mb-2">Employee Information</h1>
+             <input type="submit" value="Submit" className="btn w-64 flex flex-row" onClick={addAccount}/>
 
-            <div className="flex flex-col w-full md:flex-row">
-              {/* Employee ID */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Employee ID
-                    <span id="emp_num_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <div className="flex">
-                  <select
-                    id="company_id"
-                    name="company_id"
-                    className="select select-bordered w-32"
-                    required
-                  >
-                    <option value="" hidden>
-                      Company
-                    </option>
-                    <option value="op1">op1</option>
-                    <option value="op2">op2</option>
-                  </select>
-
-                  <input
-                    id="emp_num"
-                    name="emp_num"
-                    type="text"
-                    maxLength="100"
-                    className="input input-bordered w-full "
-                  />
-                </div>
-              </label>
-
-              {/* Work Email */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Work E-mail
-                    <span id="work_email_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <input
-                  id="work_email"
-                  name="work_email"
-                  maxLength="100"
-                  type="email"
-                  className="input input-bordered w-full "
-                  required
-                />
-              </label>
-            </div>
-
-            <div className="flex flex-col w-full md:flex-row">
-              {/* Division */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Division
-                    <span id="division_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <select
-                  id="div_id"
-                  name="div_id"
-                  className="select select-bordered w-full"
-                  required
-                >
-                  <option value="" hidden>
-                    Select Division
-                  </option>
-                  <option value="dop1">dop1</option>
-                  <option value="dop2">dop2</option>
-                </select>
-              </label>
-
-              {/* Department */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Department
-                    <span id="department_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <select
-                  id="dept_id"
-                  name="dept_id"
-                  className="select select-bordered w-full "
-                  required
-                >
-                  <option value="" hidden>
-                    Select Department
-                  </option>
-                  <option value="ddpop1">ddpop1</option>
-                  <option value="ddpop2">ddpop2</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="flex flex-col w-full md:flex-row">
-              {/* Client/Cluster */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Client/Cluster
-                    <span id="emp_num_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <select
-                  id="client_id"
-                  name="client_id"
-                  className="select select-bordered w-full "
-                  required
-                >
-                  <option value="" hidden>
-                    Select Client/Cluster
-                  </option>
-                  <option value="cc1">ccop1</option>
-                  <option value="cc2">ccop2</option>
-                </select>
-              </label>
-
-              {/* Positions */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Position
-                    <span id="department_label" className="text-red-500">
-                      *
-                    </span>
-                  </span>
-                </div>
-                <select
-                  id="position_id"
-                  name="position_id"
-                  className="select select-bordered w-full "
-                  required
-                >
-                  <option value="" hidden>
-                    Select Position
-                  </option>
-
-                  <option value="ppop1">ppop1</option>
-                  <option value="ppop1">ppop2</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="flex flex-col w-full md:flex-row">
-              {/* Employment Status */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Employment Status<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <select
-                  name="emp_status"
-                  className="select select-bordered w-full "
-                  required
-                >
-                  <option value="" hidden>
-                    Select Employment Status
-                  </option>
-                  <option>Probationary</option>
-                  <option>Regular</option>
-                  <option>Part-time</option>
-                </select>
-              </label>
-
-              {/* Employee Role */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Employment Role<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <select
-                  name="emp_role"
-                  className="select select-bordered w-full "
-                  required
-                >
-                  <option value="" hidden>
-                    Select Employment Role
-                  </option>
-                  <option value="3">Manager</option>
-                  <option value="2">Regular Employee</option>
-                  <option value="1">HR</option>
-                  <option value="0">Administrator</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="flex flex-col md:flex-row">
-              {/* Date Hired */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Date Hired<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  id="date_hired"
-                  name="date_hired"
-                  type="date"
-                  className="input input-bordered w-full "
-                  required
-                />
-              </label>
-
-              {/* Date of Regularization */}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Date of Regularization
-                    <span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  id="date_regularization"
-                  name="date_regularization"
-                  type="date"
-                  className="input input-bordered w-full "
-                  required
-                />
-              </label>
-
-              {/* Date Separated*/}
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Date Separated</span>
-                </div>
-                <input
-                  name="date_separated"
-                  type="date"
-                  className="input input-bordered w-full "
-                />
-              </label>
-            </div>
-
-            <div className="divider"></div>
-
-            <div className="flex flex-col md:flex-row">
-              <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Upload Profile Picture</span>
-                </div>
-                <input
-                  name="emp_pic"
-                  type="file"
-                  accept="image/*"
-                  className="file-input w-full max-w-xs"
-                />
-              </label>
-            </div>
-
-            <div className="divider"></div>
-          </div>
-          <div className="flex justify-end m-2">
-            <input type="submit" value="Submit" className="btn" />
           </div>
         </form>
+        <div className="m-2">
+          <h1 className="text-3xl font-bold tracking-wide">
+            Records
+          </h1>
+        </div>
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
+          {data_table ? (
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Email</th>
+                  <th>First Name</th>
+                  <th>Middle Name</th>
+                  <th>Last Name</th>
+                  <th>Account Type</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                  {/* Add more columns based on your data structure */}
+                </tr>
+              </thead>
+              <tbody>
+                {data_table.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    <td>{row.email}</td>
+                    <td>{row.first_name}</td>
+                    <td>{row.middle_name}</td>
+                    <td>{row.last_name}</td>
+                    <td>{row.account_type}</td><td>
+                    <button
+                      // onClick={() => handleEdit(row.id)}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteAccount(row.id)}
+                      className="btn btn-sm btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                    {/* Add more cells based on your data structure */}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No data available.</p>
+          )}
+        </div>
       </div>
+
     </>
   );
 }
