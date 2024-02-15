@@ -1,24 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import NoRecord from "../components/NoRecord";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom";
 
 function TsekpayRun() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userData');
-    if (!userAuthToken) { // Redirect to the login page if there is no cookie
-      navigate('/login');
+    const userAuthToken = Cookies.get("userData");
+    if (!userAuthToken) {
+      // Redirect to the login page if there is no cookie
+      navigate("/login");
     }
     console.log(userAuthToken);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
-  
+
   const [data, setData] = useState([]);
+  const [tableHeader, setTableHeader] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const checkbox = useRef(null);
 
   const handleFileUpload = (e) => {
     const reader = new FileReader();
@@ -29,8 +33,9 @@ function TsekpayRun() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
-      console.log(parsedData);
+      const headers = parsedData.shift();
       setData(parsedData);
+      setTableHeader(headers);
     };
   };
 
@@ -51,7 +56,7 @@ function TsekpayRun() {
           <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
           <div className="mr-10 my-1 flex flex-col">
             <h3 className="text-[13px] font-regular text-white">Client</h3>
-            <select className="select select-bordered w-full max-w-xs px-20">
+            <select className="select select-bordered w-full max-w-xs mx-2">
               <option>Fullsuite</option>
               <option>Ananda Spa</option>
               <option>Get Dentals</option>
@@ -59,37 +64,44 @@ function TsekpayRun() {
           </div>
         </div>
 
-        <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-          <div className="flex flex-col container w-[25%] m-5">
-            <label className="form-control w-full max-w-xs my-2">
-              <div className="label">
-                <span className="label-text">Upload Payroll File</span>
+        <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10 lg:flex-row">
+          <div className="flex flex-col lg:w-[30%]">
+            <h1 className="text-base font-bold">Upload Payroll File</h1>
+            <div className="flex flex-col flex-1 mb-5 mx-5">
+              <label className="form-control w-full max-w-xs my-2">
+                <div className="label">
+                  <span className="label-text font-semibold">
+                    Upload Payroll File
+                  </span>
+                </div>
+              </label>
+              <div className="w-[80%] lg:w-full mx-auto">
+                <input
+                  type="file"
+                  accept=".xlsx, .xls, .csv"
+                  onChange={handleFileUpload}
+                  className="file:px-3 file-input file-input-bordered w-full mx-2 file:bg-[#426E80]"
+                />
+                <button
+                  className="btn bg-[#5C9CB7] shadow-md px-5 m-2 w-full "
+                  disabled="disabled"
+                >
+                  Payslip PDF Format
+                </button>
+                <button
+                  className="btn bg-[#5C9CB7] shadow-md px-4 m-2 w-full"
+                  disabled="disabled"
+                >
+                  Send Payslip
+                </button>
               </div>
-              <input
-                type="file"
-                accept=".xlsx, .xls, .csv"
-                onChange={handleFileUpload}
-                className="file:px-3 w-[95%] file-input file-input-bordered w-full max-w-xs mx-2 file:bg-[#426E80]"
-              />
-            </label>
-            <button
-              className="btn bg-[#5C9CB7] btn-wide shadow-md px-5 m-2  "
-              disabled="disabled"
-            >
-              Payslip PDF Format
-            </button>
-            <button
-              className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-              disabled="disabled"
-            >
-              Send Payslip
-            </button>
+            </div>
           </div>
           <div className="divider divider-horizontal"></div>
-          <div className="container flex flex-col w-[75%]">
+          <div className="container flex flex-col">
             <h1 className="text-base font-bold">Period Covered</h1>
-            <div className="flex flex-row">
-              <label className="form-control w-full max-w-xs mx-3">
+            <div className="flex flex-col gap-3 lg:flex-row items-center">
+              <label className="form-control w-full max-w-xs">
                 <div className="label">
                   <span className="label-text font-medium text-sm">
                     Date From
@@ -101,7 +113,7 @@ function TsekpayRun() {
                   disabled
                 />
               </label>
-              <label className="form-control w-full max-w-xs mx-3">
+              <label className="form-control w-full max-w-xs break-after-column">
                 <div className="label">
                   <span className="label-text font-medium text-sm">
                     Date To
@@ -113,20 +125,20 @@ function TsekpayRun() {
                   disabled
                 />
               </label>
+              <label className="form-control w-full max-w-xs">
+                <div className="label">
+                  <span className="label-text font-medium text-sm text-left">
+                    Payment Date
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  className="input input-bordered w-full max-w-xs"
+                  disabled
+                />
+              </label>
             </div>
-            <label className="form-control w-full max-w-xs mx-3">
-              <div className="label">
-                <span className="label-text font-medium text-sm">
-                  Payment Date
-                </span>
-              </div>
-              <input
-                type="date"
-                className="input input-bordered w-full max-w-xs"
-                disabled
-              />
-            </label>
-            <div className="flex justify-end">
+            <div className="flex justify-center sm:justify-end mt-5">
               <button className="btn bg-[#1EBE58] text-white">Upload</button>
             </div>
           </div>
@@ -143,11 +155,18 @@ function TsekpayRun() {
                   <tr>
                     <th>
                       <label>
-                        <input type="checkbox" className="checkbox" />
+                        <input
+                          type="checkbox"
+                          className="checkbox bg-[#fff] my-2"
+                          checked={selectAll}
+                          onChange={() => {
+                            setSelectAll((current) => !current);
+                          }}
+                        />
                       </label>
                     </th>
-                    {Object.keys(data[0]).map((key) => (
-                      <th key={key}>{key}</th>
+                    {Object.values(tableHeader).map((header, index) => (
+                      <th key={index}>{header}</th>
                     ))}
                   </tr>
                 </thead>
@@ -156,7 +175,12 @@ function TsekpayRun() {
                     <tr key={index}>
                       <th>
                         <label>
-                          <input type="checkbox" className="checkbox" />
+                          <input
+                            ref={checkbox}
+                            type="checkbox"
+                            className="checkbox"
+                            checked={selectAll ? true : null}
+                          />
                         </label>
                       </th>
                       {Object.values(row).map((value, index) => (
@@ -181,7 +205,7 @@ function TsekpayRun() {
           <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
             <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
               <h1 className="font-bold text-2xl py-3 mx-3">{selectedRow[2]}</h1>
-              <div className="flex flex-row my-3">
+              <div className="flex flex-col lg:flex-row my-3">
                 <h2 className="mx-4">
                   <strong>Email: </strong>
                   {selectedRow[18]}
@@ -195,8 +219,8 @@ function TsekpayRun() {
                 </h2>
               </div>
             </div>
-            <div className="flex flex-row">
-              <div className="w-[25%]">
+            <div className="flex flex-col lg:flex-row">
+              <div className="w-full lg:w-[25%]">
                 <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
@@ -237,8 +261,8 @@ function TsekpayRun() {
                 </div>
                 <hr className="mt-1"></hr>
               </div>
-              <div className="divider divider-horizontal"></div>
-              <div className="overflow-x-auto w-[75%]">
+              {/* <div className="divider divider-horizontal"></div> */}
+              <div className="overflow-x-auto w-full lg:w-[75%]">
                 <table className="table">
                   {/* head */}
                   <thead>
