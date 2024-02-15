@@ -6,7 +6,7 @@ function PayItems() {
   return (
     <>
       <Sidebar />
-      <div className="sm:ml-64 flex flex-col">
+      <div className="md:ml-64 flex flex-col">
         <Header />
         <div className="flex flex-row">
           <h1 className="m-5 px-5 text-3xl font-bold">Pay Items</h1>

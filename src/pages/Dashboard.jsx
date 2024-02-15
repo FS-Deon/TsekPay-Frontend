@@ -29,7 +29,7 @@ function Dashboard() {
       ) : (
         <div>
           <Sidebar />
-          <div className="sm:ml-64 flex flex-col">
+          <div className="md:ml-64 flex flex-col">
             <Header />
             {/*notices*/}
             <div className="flex lg:flex-row flex-col">
@@ -44,12 +44,10 @@ function Dashboard() {
                   </h1>
                   <p className="font-regular text-xl">16 Days Ago</p>
                 </div>
-    
                 <button className="mx-2 px-3 btn btn-outline border-2 border-gray-200">
                   Upload File
                 </button>
               </div>
-    
               <div className="m-2 p-3 border-2 lg:w-[70%] border-gray-200 border-solid rounded-lg  flex flex-col">
                 <h1>Important Dates</h1>
               </div>
@@ -63,7 +61,6 @@ function Dashboard() {
                     <tr>
                       <th>Date</th>
                       <th>Transaction</th>
-    
                       <th></th>
                     </tr>
                   </thead>
@@ -79,7 +76,6 @@ function Dashboard() {
                         </div>
                       </td>
                       <td>Send Emails</td>
-    
                       <th>
                         <button className="btn btn-default btn-xs">details</button>
                       </th>
@@ -91,7 +87,6 @@ function Dashboard() {
                     <tr>
                       <th>Date</th>
                       <th>Transaction</th>
-    
                       <th></th>
                     </tr>
                   </tfoot>

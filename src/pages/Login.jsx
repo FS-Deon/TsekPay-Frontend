@@ -17,11 +17,10 @@ function Login() {
       // Redirect to the login page if there is no cookie
       navigate("/dashboard");
     }
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, []);
 
   const handleLogin = async () => {
     try {
-
       const response =  await axios.post("http://localhost:3000/account/authenticate/", {
         email,
         password

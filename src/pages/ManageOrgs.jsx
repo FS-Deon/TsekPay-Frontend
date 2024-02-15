@@ -49,12 +49,11 @@ function ManageOrgs() {
   return (
     <>
       <Sidebar />
-      <div className="sm:ml-64 flex flex-col">
+      <div className="md:ml-64 flex flex-col">
         <Header />
         <h1 className="m-5 px-5 text-3xl font-bold">Manage Organization</h1>
         <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
           <h1 className=" text-xl font-bold mx-3">Add Organization</h1>
-
           <label
             for="uploadFile1"
             class="btn bg-[#426E80] btn-wide shadow-md px-4 m-2 my-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
@@ -76,7 +75,6 @@ function ManageOrgs() {
             Upload Image
             <input type="file" id="uploadFile1" class="hidden" />
           </label>
-
           <label className="form-control w-full max-w-xs my-3 mx-3">
             <div className="label">
               <span className="label-text font-semibold text-xl">
@@ -102,7 +100,6 @@ function ManageOrgs() {
             </div>
           </label>
         </div>
-
         <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
           <h1 className=" text-xl font-bold mx-3">Organizations</h1>
           <div className="overflow-x-auto">
