@@ -1,11 +1,13 @@
 import React from "react";
 import Sidebar from "../components/Sidebar";
+import  Header from "../components/Header";
 
 function ActivityLogs() {
   return (
     <>
       <Sidebar />
-      <div className="p-4 sm:ml-64 flex flex-col container">
+      <div className="md:ml-64 flex flex-col container">
+        <Header />
         <div className="m-2 text-3xl font-bold">
           <p>Activity Logs</p>
         </div>

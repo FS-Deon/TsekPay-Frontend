@@ -50,7 +50,7 @@ function TsekpayRun() {
   return (
     <>
       <Sidebar />
-      <div className="sm:ml-64 flex flex-col">
+      <div className="md:ml-64 flex flex-col">
         <Header />
         <div className="flex flex-row justify-between">
           <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
@@ -138,14 +138,14 @@ function TsekpayRun() {
                 />
               </label>
             </div>
-            <div className="flex justify-center sm:justify-end mt-5">
+            <div className="flex justify-center md:justify-end mt-5">
               <button className="btn bg-[#1EBE58] text-white">Upload</button>
             </div>
           </div>
         </form>
       </div>
 
-      <div className="sm:ml-64 flex flex-col">
+      <div className="md:ml-64 flex flex-col">
         <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
         <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
           {data.length > 0 ? (
@@ -201,7 +201,7 @@ function TsekpayRun() {
         </div>
       </div>
       {selectedRow && (
-        <div className="sm:ml-64 flex flex-col">
+        <div className="md:ml-64 flex flex-col">
           <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
             <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
               <h1 className="font-bold text-2xl py-3 mx-3">{selectedRow[2]}</h1>
@@ -306,9 +306,9 @@ function TsekpayRun() {
         </div>
       )}
 
-      <div className="sm:ml-64 flex flex-col"></div>
+      <div className="md:ml-64 flex flex-col"></div>
 
-      {/* <div className="sm:ml-64 flex flex-col">
+      {/* <div className="md:ml-64 flex flex-col">
         <NoRecord></NoRecord>
       </div> */}
     </>

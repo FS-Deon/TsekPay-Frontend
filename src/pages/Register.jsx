@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
+import Header from "../components/Header";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom'; 
@@ -129,15 +130,16 @@ function Register() {
     <>
       <Sidebar />
 
-      <div className="w-full p-2 md:w-9/12 md:p-4 md:ml-64 flex flex-col">
-        <BackButton />
-        <div className="">
-          <h1 className=" text-3xl font-bold tracking-wide">
+      <div className="md:ml-64 flex flex-col">
+        <Header />
+        <h1 className="m-5 px-5 text-3xl font-bold">Manage Accounts</h1>
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
+          <h1 className="text-xl font-bold mx-3">
             Create Account
           </h1>
           <form>
             {/* Personal Information */}
-            <div className=" p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
+            <div className=" p-3 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
               <div className="flex flex-col md:flex-row">
                 {/* First Name */}
                 <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
@@ -301,11 +303,11 @@ function Register() {
           </form>
         </div>
 
-        <div className="">
-          <h1 className="text-3xl font-bold tracking-wide">
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
+          <h1 className="text-xl font-bold mx-3">
             Records
           </h1>
-          <div className="p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          <div className="p-3 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
             {data_table ? (
               <table border="1">
                 <thead>
@@ -355,9 +357,9 @@ function Register() {
         </div>
         
         {rowSelected ?(
-          <div className="">
+          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold tracking-wide">
+              <h1 className="text-xl font-bold mx-3">
                 Update Account
               </h1>
               <button className="m-r ml-auto"
@@ -370,7 +372,7 @@ function Register() {
         
             <form>
               {/* Personal Information */}
-              <div className="p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
+              <div className="p-3 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
                 <div className="flex flex-col md:flex-row">
                   {/* First Name */}
                   <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
@@ -540,7 +542,7 @@ function Register() {
             </form>
           </div>
           ) : (
-            <p>No Row Selected</p>
+            <p>&nbsp;</p>
           )
         }
       </div>
