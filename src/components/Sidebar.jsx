@@ -46,7 +46,7 @@ function Sidebar() {
 
       <aside
         id="default-sidebar"
-        className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 ${
+        className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full md:translate-x-0 ${
           showSideBar ? "translate-x-0" : "translate-x-[-100%]"
         }`}
         aria-label="Sidebar"
