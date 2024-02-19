@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -87,7 +87,6 @@ function Login() {
                   }}
                 />
                 <button className="btn btn-circle btn-ghost btn-sm">
-
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

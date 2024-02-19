@@ -1,8 +1,8 @@
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import Sidebar from "../components/Sidebar.jsx";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; 
 import axios from "axios";
 
 function Register() {
@@ -23,20 +23,19 @@ function Register() {
   const [selectedRow, setSelectedRow] = useState({});
 
   useEffect(() => {
-
-    const userData = Cookies.get("userData");
-    if (!userData) {
+    const userData = Cookies.get('userData');
+    if(!userData){
       console.log("EMPTY");
-      navigate("/login");
+      navigate('/login');
     }
     viewAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   // Get token from userData cookie
   const getToken = () => {
-    const userData = JSON.parse(Cookies.get("userData"));
+    const userData = JSON.parse(Cookies.get('userData'));
     return userData.token;
-  };
+  };  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -76,46 +75,15 @@ function Register() {
       console.error("Error viewing accounts: ", error);
     }
   };
-
-  const onClickEdit = (rowId) => {
-    setSelectedRow(data_table.find((row) => row.id === rowId));
-    setRowSelected(true);
-  };
-  const onClickClose = (rowId) => {
-    setSelectedRow("");
-    setRowSelected(false);
-  };
-
-  const updateAccount = async (recordID) => {
-    try {
+  
+  const deleteAccount = async (recordID) => {
+    try{
       const token = getToken();
-      const response = await axios.patch(`http://localhost:3000/account/edit/${recordID}`, selectedRow, {
+      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
         headers: {
           Authorization: token,
         },
       });
-  
-      if (response.status === 200) {
-        console.log("Record updated successfully!");
-        // Additional logic if needed
-      } else {
-        console.error("Failed to update record");
-      }
-    } catch (error) {
-      console.error("Error updating account: ", error);
-    }
-  };
-  const deleteAccount = async (recordID) => {
-    try {
-      const token = getToken();
-      response = await axios.delete(
-        `http://localhost:3000/account/remove/${recordID}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
 
       if (response.status === 200) {
         viewAccounts();
@@ -123,7 +91,7 @@ function Register() {
       } else {
         console.error("Failed to delete record");
       }
-    } catch (error) {
+    } catch (error){
       console.error("Error viewing accounts: ", error);
     }
   };
@@ -131,11 +99,14 @@ function Register() {
 
   return (
     <>
+      <Sidebar />
 
-      <div className="m-5">
+      <div className="p-4 sm:ml-64 flex flex-col">
         <BackButton />
         <div className="m-2">
-          <h1 className="text-3xl font-bold tracking-wide">Register Account</h1>
+          <h1 className="text-3xl font-bold tracking-wide">
+            Register Account
+          </h1>
         </div>
         <form>
           {/* Personal Information */}
@@ -337,6 +308,7 @@ function Register() {
                   }}
                 />
               </label>
+
             </div>
             {/* Account Type */}
             <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
@@ -345,16 +317,14 @@ function Register() {
               </div>
 
 
-            <input
-              type="submit"
-              value="Submit"
-              className="btn w-64 flex flex-row"
-              onClick={addAccount}
-            />
+             <input type="submit" value="Submit" className="btn w-64 flex flex-row" onClick={addAccount}/>
+
           </div>
         </form>
         <div className="m-2">
-          <h1 className="text-3xl font-bold tracking-wide">Records</h1>
+          <h1 className="text-3xl font-bold tracking-wide">
+            Records
+          </h1>
         </div>
         <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
           {data_table ? (
@@ -380,23 +350,22 @@ function Register() {
                     <td>{row.first_name}</td>
                     <td>{row.middle_name}</td>
                     <td>{row.last_name}</td>
-                    <td>{row.account_type}</td>
-                    <td>
-                      <button
-                        // onClick={() => handleEdit(row.id)}
-                        className="btn btn-sm btn-primary"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => deleteAccount(row.id)}
-                        className="btn btn-sm btn-danger"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    <td>{row.account_type}</td><td>
+                    <button
+                      // onClick={() => handleEdit(row.id)}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteAccount(row.id)}
+                      className="btn btn-sm btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
                     {/* Add more cells based on your data structure */}
 
                   </tr>
@@ -625,6 +594,7 @@ function Register() {
           )
         }
       </div>
+
     </>
   );
 }

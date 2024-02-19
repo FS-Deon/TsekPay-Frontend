@@ -1,5 +1,6 @@
-
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 import NoRecord from "../components/NoRecord";
 import { useState } from "react";
 import * as XLSX from "xlsx";
@@ -48,54 +49,80 @@ function TsekpayRun() {
 
   return (
     <>
-
-      <div className="flex flex-row justify-between">
-        <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
-        <div className="mr-10 my-1 flex flex-col">
-          <h3 className="text-[13px] font-regular text-white">Client</h3>
-          <select className="select select-bordered w-full max-w-xs px-20">
-            <option>Fullsuite</option>
-            <option>Ananda Spa</option>
-            <option>Get Dentals</option>
-          </select>
+      <Sidebar />
+      <div className="sm:ml-64 flex flex-col">
+        <Header />
+        <div className="flex flex-row justify-between">
+          <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
+          <div className="mr-10 my-1 flex flex-col">
+            <h3 className="text-[13px] font-regular text-white">Client</h3>
+            <select className="select select-bordered w-full max-w-xs px-20">
+              <option>Fullsuite</option>
+              <option>Ananda Spa</option>
+              <option>Get Dentals</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-
-      <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        <div className="flex flex-col container w-[25%] m-5">
-          <label className="form-control w-full max-w-xs my-2">
-            <div className="label">
-              <span className="label-text">Upload Payroll File</span>
+        <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          <div className="flex flex-col container w-[25%] m-5">
+            <label className="form-control w-full max-w-xs my-2">
+              <div className="label">
+                <span className="label-text">Upload Payroll File</span>
+              </div>
+              <input
+                type="file"
+                accept=".xlsx, .xls, .csv"
+                onChange={handleFileUpload}
+                className="file:px-3 w-[95%] file-input file-input-bordered w-full max-w-xs mx-2 file:bg-[#426E80]"
+              />
+            </label>
+            <button
+              className="btn bg-[#5C9CB7] btn-wide shadow-md px-5 m-2  "
+              disabled="disabled"
+            >
+              Payslip PDF Format
+            </button>
+            <button
+              className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
+              disabled="disabled"
+            >
+              Send Payslip
+            </button>
+          </div>
+          <div className="divider divider-horizontal"></div>
+          <div className="container flex flex-col w-[75%]">
+            <h1 className="text-base font-bold">Period Covered</h1>
+            <div className="flex flex-row">
+              <label className="form-control w-full max-w-xs mx-3">
+                <div className="label">
+                  <span className="label-text font-medium text-sm">
+                    Date From
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  className="input input-bordered w-full max-w-xs"
+                  disabled
+                />
+              </label>
+              <label className="form-control w-full max-w-xs mx-3">
+                <div className="label">
+                  <span className="label-text font-medium text-sm">
+                    Date To
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  className="input input-bordered w-full max-w-xs"
+                  disabled
+                />
+              </label>
             </div>
-            <input
-              type="file"
-              accept=".xlsx, .xls, .csv"
-              onChange={handleFileUpload}
-              className="file:px-3 w-[95%] file-input file-input-bordered max-w-xs mx-2 file:bg-[#426E80]"
-            />
-          </label>
-          <button
-            className="btn bg-[#5C9CB7] btn-wide shadow-md px-5 m-2  "
-            disabled="disabled"
-          >
-            Payslip PDF Format
-          </button>
-          <button
-            className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-            disabled="disabled"
-          >
-            Send Payslip
-          </button>
-        </div>
-        <div className="divider divider-horizontal"></div>
-        <div className="container flex flex-col w-[75%]">
-          <h1 className="text-base font-bold">Period Covered</h1>
-          <div className="flex flex-row">
             <label className="form-control w-full max-w-xs mx-3">
               <div className="label">
                 <span className="label-text font-medium text-sm">
-                  Date From
+                  Payment Date
                 </span>
               </div>
               <input
@@ -104,58 +131,21 @@ function TsekpayRun() {
                 disabled
               />
             </label>
-            <label className="form-control w-full max-w-xs mx-3">
-              <div className="label">
-                <span className="label-text font-medium text-sm">Date To</span>
-              </div>
-              <input
-                type="date"
-                className="input input-bordered w-full max-w-xs"
-                disabled
-              />
-            </label>
-          </div>
-          <label className="form-control w-full max-w-xs mx-3">
-            <div className="label">
-              <span className="label-text font-medium text-sm">
-                Payment Date
-              </span>
-
+            <div className="flex justify-end">
+              <button className="btn bg-[#1EBE58] text-white">Upload</button>
             </div>
-            <input
-              type="date"
-              className="input input-bordered w-full max-w-xs"
-              disabled
-            />
-          </label>
-          <div className="flex justify-end">
-            <button className="btn bg-[#1EBE58] text-white">Upload</button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
 
-
-      <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
-      <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        {data.length > 0 ? (
-          <div className="overflow-x-auto overflow-scroll h-[55vh]">
-            <table className="table table-xs">
-              <thead className="bg-[#4A6E7E] text-white sticky top-0">
-                <tr>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  {Object.keys(data[0]).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row, index) => (
-                  <tr key={index}>
-
+      <div className="sm:ml-64 flex flex-col">
+        <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
+        <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+          {data.length > 0 ? (
+            <div className="overflow-x-auto overflow-scroll h-[55vh]">
+              <table className="table table-xs">
+                <thead className="bg-[#4A6E7E] text-white sticky top-0">
+                  <tr>
                     <th>
                       <label>
                         <input
@@ -168,23 +158,35 @@ function TsekpayRun() {
                         />
                       </label>
                     </th>
-
-                    {Object.values(row).map((value, index) => (
-                      <td key={index}>
-                        <button onClick={() => handleNameClick(row)}>
-                          {value}
-                        </button>
-                      </td>
+                    {Object.keys(data[0]).map((key) => (
+                      <th key={key}>{key}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <NoRecord></NoRecord>
-        )}
-
+                </thead>
+                <tbody>
+                  {data.map((row, index) => (
+                    <tr key={index}>
+                      <th>
+                        <label>
+                          <input type="checkbox" className="checkbox" />
+                        </label>
+                      </th>
+                      {Object.values(row).map((value, index) => (
+                        <td key={index}>
+                          <button onClick={() => handleNameClick(row)}>
+                            {value}
+                          </button>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <NoRecord></NoRecord>
+          )}
+        </div>
       </div>
       {selectedRow && (
         <div className="md:ml-64 flex flex-col">
@@ -292,9 +294,11 @@ function TsekpayRun() {
         </div>
       )}
 
-
       <div className="sm:ml-64 flex flex-col"></div>
 
+      {/* <div className="sm:ml-64 flex flex-col">
+        <NoRecord></NoRecord>
+      </div> */}
     </>
   );
 }
