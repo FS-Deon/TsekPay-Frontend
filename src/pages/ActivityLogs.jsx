@@ -1,11 +1,7 @@
-import React from "react";
-import Sidebar from "../components/Sidebar";
-
 function ActivityLogs() {
   return (
     <>
-      <Sidebar />
-      <div className="p-4 sm:ml-64 flex flex-col container">
+      <div className="m-5 container">
         <div className="m-2 text-3xl font-bold">
           <p>Activity Logs</p>
         </div>
