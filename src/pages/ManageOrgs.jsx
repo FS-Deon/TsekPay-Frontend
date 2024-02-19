@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; 
 import axios from "axios";
 
 function ManageOrgs() {
@@ -10,39 +10,38 @@ function ManageOrgs() {
   const [organizations, setOrganizations] = useState([]);
 
   useEffect(() => {
-    const userAuthToken = Cookies.get("userData");
-    if (!userAuthToken) {
-      // Redirect to the login page if there is no cookie
-      navigate("/login");
+    const userAuthToken = Cookies.get('userData');
+    if (!userAuthToken) { // Redirect to the login page if there is no cookie
+      navigate('/login');
     }
 
     getOrganizations();
     console.log("done");
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
-  const getOrganizations = async () => {
+  const getOrganizations = async() => {
     console.log("Get Companies.");
-    try {
+    try{
       const response = await axios.get("http://localhost:3000/company/view", {
         headers: {
-          Authorization: axios.defaults.headers.common["Authorization"],
+          Authorization: axios.defaults.headers.common['Authorization'],
         },
       });
       setOrganizations(response.data); // Assuming the response contains an array of organizations
       console.log(response);
-    } catch (error) {
+    } catch(error){
       console.error("Error: ", error);
     }
   };
 
-  const addOrganization = async () => {
-    try {
-      const response = await axios.post("http://localhost:3000/company", {
+  const addOrganization = async() => {
+    try{
+      const response =  await axios.post("http://localhost:3000/company", {
         account_id,
         commpany_name,
-        address,
+        address
       });
-    } catch (error) {
+    } catch(error){
       console.error("Error:", error);
     }
   };

@@ -316,7 +316,10 @@ function Register() {
                 <span className="label-text">Account Type</span>
               </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 76d728e (Update: Optimized Rendering)
              <input type="submit" value="Submit" className="btn w-64 flex flex-row" onClick={addAccount}/>
 
           </div>
@@ -367,6 +370,7 @@ function Register() {
                     </button>
                   </td>
                     {/* Add more cells based on your data structure */}
+<<<<<<< HEAD
 
                   </tr>
                 </thead>
@@ -402,6 +406,15 @@ function Register() {
               <p>No data available.</p>
             )}
           </div>
+=======
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No data available.</p>
+          )}
+>>>>>>> parent of 76d728e (Update: Optimized Rendering)
         </div>
         
         {rowSelected ?(
