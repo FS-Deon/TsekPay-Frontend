@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
@@ -103,9 +103,7 @@ function Register() {
 
   return (
     <>
-      <Sidebar />
-
-      <div className="p-4 sm:ml-64 flex flex-col">
+      <div className="p-4 m-5">
         <BackButton />
         <div className="m-2">
           <h1 className="text-3xl font-bold tracking-wide">Register Account</h1>

@@ -10,6 +10,7 @@ import {
   ManageOrgs,
   PayItems,
 } from "./pages";
+import Layout from "./components/Layout";
 
 function App() {
   return (
@@ -19,14 +20,16 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/non-recurring" element={<NonRecurring />} />
-            <Route path="/activity-logs" element={<ActivityLogs />} />
-            <Route path="/select-orgnazation" element={<SelectOrg />} />
-            <Route path="/tsekpay-run" element={<TsekpayRun />} />
-            <Route path="/manage-organizations" element={<ManageOrgs />} />
-            <Route path="/manage-pay-items" element={<PayItems/>} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/non-recurring" element={<NonRecurring />} />
+              <Route path="/activity-logs" element={<ActivityLogs />} />
+              <Route path="/select-orgnazation" element={<SelectOrg />} />
+              <Route path="/tsekpay-run" element={<TsekpayRun />} />
+              <Route path="/manage-organizations" element={<ManageOrgs />} />
+              <Route path="/manage-pay-items" element={<PayItems />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </div>
