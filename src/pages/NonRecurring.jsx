@@ -1,9 +1,5 @@
-import React from 'react'
-
 function NonRecurring() {
-  return (
-    <div>NonRecurring</div>
-  )
+  return <div>NonRecurring</div>;
 }
 
-export default NonRecurring
+export default NonRecurring;
