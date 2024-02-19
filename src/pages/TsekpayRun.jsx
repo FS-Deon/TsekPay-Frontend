@@ -1,23 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import NoRecord from "../components/NoRecord";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom";
 
 function TsekpayRun() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAuthToken = Cookies.get('userData');
-    if (!userAuthToken) { // Redirect to the login page if there is no cookie
-      navigate('/login');
+    const userAuthToken = Cookies.get("userData");
+    if (!userAuthToken) {
+      // Redirect to the login page if there is no cookie
+      navigate("/login");
     }
     console.log(userAuthToken);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
-  
+
   const [data, setData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
   const [selectAll, setSelectAll] = useState(false);

@@ -1,37 +1,20 @@
-<<<<<<< HEAD
-import React from "react";
-=======
-import React  from "react";
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 function Sidebar() {
-<<<<<<< HEAD
   const userData = JSON.parse(Cookies.get("userData"));
   const fullName =
     userData.first_name + " " + userData.middle_name + " " + userData.last_name;
-=======
-  const userData = JSON.parse(Cookies.get('userData'));
-  const fullName = userData.first_name + " " + userData.middle_name + " " +userData.last_name;
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
   const accountType = userData.account_type;
   const [showSideBar, setShowSideBar] = useState(false);
 
-  const handleLogout =  async() => {
+  const handleLogout = async () => {
     try {
-<<<<<<< HEAD
       Cookies.remove("userData");
       navigate("/login");
     } catch (error) {}
-=======
-      Cookies.remove('userData');
-      navigate('/login'); 
-    } catch (error) {
-
-    }
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
   };
 
   const toggleSideBar = () => {
@@ -81,9 +64,7 @@ function Sidebar() {
                 </div>
 
                 <div className="flex flex-col items-center justify-center">
-                  <div className="font-bold text-xl text-white">
-                    {fullName}
-                  </div>
+                  <div className="font-bold text-xl text-white">{fullName}</div>
                   <div className="mb-1 text-center text-white">
                     {accountType}
                   </div>
@@ -206,7 +187,6 @@ function Sidebar() {
                 to="/manage-pay-items"
                 className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800 group"
               >
-<<<<<<< HEAD
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -214,15 +194,6 @@ function Sidebar() {
                   class="w-6 h-6"
                 >
                   <path d="M15 3.75H9v16.5h6V3.75ZM16.5 20.25h3.375c1.035 0 1.875-.84 1.875-1.875V5.625c0-1.036-.84-1.875-1.875-1.875H16.5v16.5ZM4.125 3.75H7.5v16.5H4.125a1.875 1.875 0 0 1-1.875-1.875V5.625c0-1.036.84-1.875 1.875-1.875Z" />
-=======
-                <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="white" 
-                class="w-6 h-6">
-                <path 
-                d="M15 3.75H9v16.5h6V3.75ZM16.5 20.25h3.375c1.035 0 1.875-.84 1.875-1.875V5.625c0-1.036-.84-1.875-1.875-1.875H16.5v16.5ZM4.125 3.75H7.5v16.5H4.125a1.875 1.875 0 0 1-1.875-1.875V5.625c0-1.036.84-1.875 1.875-1.875Z" />
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
                 </svg>
 
                 <span className="flex-1 ml-3 whitespace-nowrap text-white">
@@ -232,7 +203,6 @@ function Sidebar() {
             </li>
 
             <Link
-<<<<<<< HEAD
               to="/manage-organizations"
               className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-800 group"
             >
@@ -248,20 +218,6 @@ function Sidebar() {
                   clip-rule="evenodd"
                 />
               </svg>
-=======
-                to="/manage-organizations"
-                className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-800 group"
-              >
-                <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="white" 
-                class="w-6 h-6">
-                <path 
-                fill-rule="evenodd" 
-                  d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5h-.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5h-.75V3.75a.75.75 0 0 0 0-1.5h-15ZM9 6a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm-.75 3.75A.75.75 0 0 1 9 9h1.5a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM9 12a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm3.75-5.25A.75.75 0 0 1 13.5 6H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM13.5 9a.75.75 0 0 0 0 1.5H15A.75.75 0 0 0 15 9h-1.5Zm-.75 3.75a.75.75 0 0 1 .75-.75H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM9 19.5v-2.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 9 19.5Z" clip-rule="evenodd" />
-                </svg>
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
 
               <span className="flex-1 ml-3 whitespace-nowrap text-white">
                 Organizations

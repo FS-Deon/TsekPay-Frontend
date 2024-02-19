@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
-=======
-import React, { useEffect, useState } from 'react';
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Cookies from "js-cookie";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -14,10 +10,10 @@ function Dashboard() {
 
   useEffect(() => {
     const checkUserData = () => {
-      const userDataCookie = Cookies.get('userData');
+      const userDataCookie = Cookies.get("userData");
 
       if (!userDataCookie) {
-        navigate('/login');
+        navigate("/login");
       } else {
         setLoading(false);
       }
@@ -48,7 +44,6 @@ function Dashboard() {
                   </h1>
                   <p className="font-regular text-xl">16 Days Ago</p>
                 </div>
-<<<<<<< HEAD
 
                 <button className="mx-2 px-3 btn btn-outline border-2 border-gray-200">
                   Upload File
@@ -58,17 +53,6 @@ function Dashboard() {
               <div className="m-2 p-3 border-2 lg:w-[70%] border-gray-200 border-solid rounded-lg  flex flex-col">
                 <h1>Important Dates</h1>
               </div>
-=======
-    
-                <button className="mx-2 px-3 btn btn-outline border-2 border-gray-200">
-                  Upload File
-                </button>
-              </div>
-    
-              <div className="m-2 p-3 border-2 lg:w-[70%] border-gray-200 border-solid rounded-lg  flex flex-col">
-                <h1>Important Dates</h1>
-              </div>
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
             </div>
             <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg ">
               <h1 className="text-xl font-semibold">Activity Log</h1>
@@ -79,11 +63,7 @@ function Dashboard() {
                     <tr>
                       <th>Date</th>
                       <th>Transaction</th>
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
                       <th></th>
                     </tr>
                   </thead>
@@ -99,17 +79,11 @@ function Dashboard() {
                         </div>
                       </td>
                       <td>Send Emails</td>
-<<<<<<< HEAD
 
                       <th>
                         <button className="btn btn-default btn-xs">
                           details
                         </button>
-=======
-    
-                      <th>
-                        <button className="btn btn-default btn-xs">details</button>
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
                       </th>
                     </tr>
                     {/* row 2 */}
@@ -119,11 +93,7 @@ function Dashboard() {
                     <tr>
                       <th>Date</th>
                       <th>Transaction</th>
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> parent of 76d728e (Update: Optimized Rendering)
                       <th></th>
                     </tr>
                   </tfoot>
