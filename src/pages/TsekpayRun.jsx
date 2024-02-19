@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import NoRecord from "../components/NoRecord";
 import { useState } from "react";
@@ -18,6 +19,9 @@ function TsekpayRun() {
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   const [data, setData] = useState([]);
+  const [tableHeader, setTableHeader] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const checkbox = useRef(null);
 
   const handleFileUpload = (e) => {
     const reader = new FileReader();
@@ -28,8 +32,9 @@ function TsekpayRun() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
-      console.log(parsedData);
+      const headers = parsedData.shift();
       setData(parsedData);
+      setTableHeader(headers);
     };
   };
 
@@ -43,6 +48,7 @@ function TsekpayRun() {
 
   return (
     <>
+
       <div className="flex flex-row justify-between">
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
         <div className="mr-10 my-1 flex flex-col">
@@ -54,6 +60,7 @@ function TsekpayRun() {
           </select>
         </div>
       </div>
+
 
       <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
         <div className="flex flex-col container w-[25%] m-5">
@@ -113,6 +120,7 @@ function TsekpayRun() {
               <span className="label-text font-medium text-sm">
                 Payment Date
               </span>
+
             </div>
             <input
               type="date"
@@ -125,6 +133,7 @@ function TsekpayRun() {
           </div>
         </div>
       </form>
+
 
       <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
       <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
@@ -146,11 +155,20 @@ function TsekpayRun() {
               <tbody>
                 {data.map((row, index) => (
                   <tr key={index}>
+
                     <th>
                       <label>
-                        <input type="checkbox" className="checkbox" />
+                        <input
+                          type="checkbox"
+                          className="checkbox bg-[#fff] my-2"
+                          checked={selectAll}
+                          onChange={() => {
+                            setSelectAll((current) => !current);
+                          }}
+                        />
                       </label>
                     </th>
+
                     {Object.values(row).map((value, index) => (
                       <td key={index}>
                         <button onClick={() => handleNameClick(row)}>
@@ -166,13 +184,14 @@ function TsekpayRun() {
         ) : (
           <NoRecord></NoRecord>
         )}
+
       </div>
       {selectedRow && (
-        <div className="sm:ml-64 flex flex-col">
+        <div className="md:ml-64 flex flex-col">
           <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
             <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
               <h1 className="font-bold text-2xl py-3 mx-3">{selectedRow[2]}</h1>
-              <div className="flex flex-row my-3">
+              <div className="flex flex-col lg:flex-row my-3">
                 <h2 className="mx-4">
                   <strong>Email: </strong>
                   {selectedRow[18]}
@@ -186,8 +205,8 @@ function TsekpayRun() {
                 </h2>
               </div>
             </div>
-            <div className="flex flex-row">
-              <div className="w-[25%]">
+            <div className="flex flex-col lg:flex-row">
+              <div className="w-full lg:w-[25%]">
                 <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
@@ -228,8 +247,8 @@ function TsekpayRun() {
                 </div>
                 <hr className="mt-1"></hr>
               </div>
-              <div className="divider divider-horizontal"></div>
-              <div className="overflow-x-auto w-[75%]">
+              {/* <div className="divider divider-horizontal"></div> */}
+              <div className="overflow-x-auto w-full lg:w-[75%]">
                 <table className="table">
                   {/* head */}
                   <thead>
@@ -273,7 +292,9 @@ function TsekpayRun() {
         </div>
       )}
 
+
       <div className="sm:ml-64 flex flex-col"></div>
+
     </>
   );
 }

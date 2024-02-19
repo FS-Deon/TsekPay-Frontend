@@ -17,7 +17,7 @@ function Login() {
       // Redirect to the login page if there is no cookie
       navigate("/dashboard");
     }
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -87,6 +87,7 @@ function Login() {
                   }}
                 />
                 <button className="btn btn-circle btn-ghost btn-sm">
+
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

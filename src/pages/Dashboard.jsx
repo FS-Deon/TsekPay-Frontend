@@ -26,6 +26,7 @@ function Dashboard() {
         <p>Loading...</p>
       ) : (
         <div>
+
           <div className="flex lg:flex-row flex-col">
             <div className="flex flex-col lg:w-[30%]">
               <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col items-center justify-center">
@@ -43,7 +44,6 @@ function Dashboard() {
                 Upload File
               </button>
             </div>
-
             <div className="m-2 p-3 border-2 lg:w-[70%] border-gray-200 border-solid rounded-lg  flex flex-col">
               <h1>Important Dates</h1>
             </div>

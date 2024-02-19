@@ -47,6 +47,7 @@ function ManageOrgs() {
 
   return (
     <>
+
       <h1 className="m-5 px-5 text-3xl font-bold">Manage Organization</h1>
       <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
         <h1 className=" text-xl font-bold mx-3">Add Organization</h1>
@@ -86,6 +87,7 @@ function ManageOrgs() {
             <span className="label-text font-semibold text-xl">
               Description
             </span>
+
           </div>
           <textarea className="textarea textarea-bordered h-24 w-[30%]"></textarea>
           <div className="flex items-center justify-center">

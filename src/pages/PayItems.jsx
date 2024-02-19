@@ -3,8 +3,10 @@ import AddPayItem from "../components/AddPayItem.jsx";
 function PayItems() {
   return (
     <>
+
       <div className="flex flex-row">
         <h1 className="m-5 px-5 text-3xl font-bold">Pay Items</h1>
+
 
         <AddPayItem></AddPayItem>
       </div>
