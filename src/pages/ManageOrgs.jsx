@@ -7,29 +7,46 @@ import axios from "axios";
 
 function ManageOrgs() {
   const navigate = useNavigate();
-  const [organizations, setOrganizations] = useState([]);
-
+  let response;
+  const userData = Cookies.get("userData");
+  const userID = JSON.parse(userData).id;
+  const [organizations, setOrganizations] = useState({
+    logo: "",
+    name: "",
+    address: "",
+    payables: {}
+  });
+  const [dataTable, setDataTable] = useState([]);
+  const [rowSelected, setRowSelected] = useState(false);
+  const [selectedRow, setSelectedRow] = useState({});
   useEffect(() => {
-    const userAuthToken = Cookies.get("userData");
-    if (!userAuthToken) {
+    if (!userData) {
       // Redirect to the login page if there is no cookie
       navigate("/login");
     }
-
-    getOrganizations();
-    console.log("done");
+    getOrganizations(userID);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
-  const getOrganizations = async () => {
-    console.log("Get Companies.");
+
+  // Get token from userData cookie
+  const getToken = () => {
+    const userData = JSON.parse(Cookies.get("userData"));
+    return userData.token;
+  };
+
+  const getOrganizations = async (accountID) => {
     try {
-      const response = await axios.get("http://localhost:3000/company/view", {
+      const token = getToken();
+      const response = await axios.get(`http://localhost:3000/company/view/${accountID}`, {
         headers: {
-          Authorization: axios.defaults.headers.common["Authorization"],
+          Authorization: token,
         },
       });
-      setOrganizations(response.data); // Assuming the response contains an array of organizations
-      console.log(response);
+      const rows = response.data.rows;
+      // Check if response is not null before updating state
+      if (rows) {
+        setDataTable(rows);
+      }
     } catch (error) {
       console.error("Error: ", error);
     }
@@ -50,7 +67,7 @@ function ManageOrgs() {
   return (
     <>
       <h1 className="m-5 px-5 text-3xl font-bold">Manage Organization</h1>
-      <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
+      <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col">
         <h1 className=" text-xl font-bold mx-3">Add Organization</h1>
 
         <label
@@ -86,7 +103,7 @@ function ManageOrgs() {
         <label className="form-control my-3 mx-3">
           <div className="label">
             <span className="label-text font-semibold text-xl">
-              Description
+              Address
             </span>
           </div>
           <textarea className="textarea textarea-bordered h-24 w-[30%]"></textarea>
@@ -98,87 +115,53 @@ function ManageOrgs() {
         </label>
       </div>
 
-      <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
-        <h1 className=" text-xl font-bold mx-3">Organizations</h1>
-        <div className="overflow-x-auto">
-          <table className="table">
-            {/* head */}
-            <thead>
-              <tr>
-                <th>Logo</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* row 1 */}
-              <tr>
-                <th>
-                  {" "}
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px]"
-                    alt="logo"
-                  />
-                </th>
-                <td>Fullsuite</td>
-                <td>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Mauris molestie est magna, vitae fringilla massa semper id.
-                </td>
-                <td className="">
-                  {" "}
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-              {/* row 1 */}
-              <tr>
-                <th>
-                  {" "}
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px]"
-                    alt="logo"
-                  />
-                </th>
-                <td>Fullsuite</td>
-                <td>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Mauris molestie est magna, vitae fringilla massa semper id.
-                </td>
-                <td className="">
-                  {" "}
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-              {/* row 1 */}
-              <tr>
-                <th>
-                  {" "}
-                  <img
-                    src="../Fs-logo.png"
-                    className="h-[100px] w-[100px]"
-                    alt="logo"
-                  />
-                </th>
-                <td>Fullsuite</td>
-                <td>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Mauris molestie est magna, vitae fringilla massa semper id.
-                </td>
-                <td className="">
-                  {" "}
-                  <a className="link mx-3">Edit</a>{" "}
-                  <a className="link mx-3">Delete</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          {dataTable ? (
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Logo</th>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th></th>
+                  <th></th>
+                  {/* Add more columns based on your data structure */}
+                </tr>
+              </thead>
+              <tbody>
+                {dataTable.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    <td>{row.logo}</td>
+                    <td>{row.name}</td>
+                    <td>{row.address}</td>
+                    <td>
+                      <button
+                        onClick={() => onClickEdit(row.id)}
+                        className="btn btn-sm btn-primary"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => deleteAccount(row.id)}
+                        className="btn btn-sm btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                    {/* Add more cells based on your data structure */}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No data available.</p>
+          )}
         </div>
-      </div>
+      
     </>
   );
 }
