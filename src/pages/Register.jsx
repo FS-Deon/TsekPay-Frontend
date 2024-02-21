@@ -18,17 +18,15 @@ function Register() {
     password: "",
     account_type: "",
   });
-  const [data_table, setDataTable] = useState([]);
+  const [dataTable, setDataTable] = useState([]);
   const [rowSelected, setRowSelected] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
 
   useEffect(() => {
-    const userData = Cookies.get("userData");
     if (!userData) {
-      console.log("EMPTY");
       navigate("/login");
     }
-    viewAccounts();
+    getAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   // Get token from userData cookie
@@ -44,9 +42,8 @@ function Register() {
     const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
+  
   const addAccount = async () => {
-    console.log(accountData);
     try {
       response = await axios.post(
         "http://localhost:3000/account/",
@@ -55,12 +52,13 @@ function Register() {
       if (response) {
         console.log("TRUE");
       }
+      setAccountData("");
     } catch (error) {
       console.error("Error adding account: ", error);
     }
   };
 
-  const viewAccounts = async () => {
+  const getAccounts = async () => {
     try {
       const token = getToken();
       response = await axios.get("http://localhost:3000/account/view/", {
@@ -78,20 +76,49 @@ function Register() {
     }
   };
 
-  const deleteAccount = async (recordID) => {
+  const onClickEdit = (rowId) => {
+    const selectedData = dataTable.find((row) => row.id === rowId)
+    setSelectedRow(selectedData);
+    setRowSelected(true);
+    console.log(selectedData);
+  };
+  const onClickClose = (rowId) => {
+    setSelectedRow("");
+    setRowSelected(false);
+  };
+
+  const updateAccount = async (recordID) => {
+    console.log(selectedRow);
     try {
       const token = getToken();
-      response = await axios.delete(
-        `http://localhost:3000/account/remove/${recordID}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const response = await axios.patch(`http://localhost:3000/account/edit/${recordID}`, selectedRow, {
+        headers: {
+          Authorization: token,
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log("Record updated successfully!");
+        // Additional logic if needed
+      } else {
+        console.error("Failed to update record");
+      }
+    } catch (error) {
+      console.error("Error updating account: ", error);
+    }
+  };
+  
+  const deleteAccount = async (recordID) => {
+    try{
+      const token = getToken();
+      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       if (response.status === 200) {
-        viewAccounts();
+        getAccounts();
         console.log("Record deleted successfully!");
       } else {
         console.error("Failed to delete record");
@@ -126,7 +153,10 @@ function Register() {
                   className="input input-bordered w-full "
                   required
                   onChange={(e) => {
-                    setFN(e.target.value);
+                    setAccountData((prevAccountData) => ({
+                      ...prevAccountData,
+                      first_name: e.target.value,
+                    }));
                   }}
                 />
               </label>
@@ -264,69 +294,18 @@ function Register() {
             </div>
 
             <input
-              name="dob"
-              type="date"
-              className="input input-bordered w-full"
-              required
-              onChange={(e) => {
-                setDOB(e.target.value);
-              }}
-            />
-            <div className="flex flex-col md:flex-row">
-              {/* Personal Email */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Email<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="email"
-                  type="email"
-                  className="input input-bordered w-full "
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-              </label>
-              {/* Password */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Password <span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="password"
-                  type="text"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-              </label>
-            </div>
-            {/* Account Type */}
-            <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-              <div className="label">
-                <span className="label-text">Account Type</span>
-              </div>
-
-              <input
                 type="submit"
                 value="Submit"
                 className="btn w-64 flex flex-row"
                 onClick={addAccount}
               />
-            </label>
           </div>
         </form>
         <div className="m-2">
           <h1 className="text-3xl font-bold tracking-wide">Records</h1>
         </div>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-          {data_table ? (
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          {dataTable ? (
             <table border="1">
               <thead>
                 <tr>
@@ -336,13 +315,13 @@ function Register() {
                   <th>Middle Name</th>
                   <th>Last Name</th>
                   <th>Account Type</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
+                  <th></th>
+                  <th></th>
                   {/* Add more columns based on your data structure */}
                 </tr>
               </thead>
               <tbody>
-                {data_table.map((row) => (
+                {dataTable.map((row) => (
                   <tr key={row.id}>
                     <td>{row.id}</td>
                     <td>{row.email}</td>
@@ -352,7 +331,7 @@ function Register() {
                     <td>{row.account_type}</td>
                     <td>
                       <button
-                        // onClick={() => handleEdit(row.id)}
+                        onClick={() => onClickEdit(row.id)}
                         className="btn btn-sm btn-primary"
                       >
                         Edit
@@ -377,7 +356,7 @@ function Register() {
         </div>
 
         {rowSelected ? (
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
+          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col">
             <div className="flex justify-between items-center">
               <h1 className="text-xl font-bold mx-3">Update Account</h1>
               <button className="m-r ml-auto" onClick={() => onClickClose()}>
