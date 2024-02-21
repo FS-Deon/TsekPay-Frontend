@@ -30,6 +30,7 @@ function Login() {
       );
       const userData = {
         token: response.data.token,
+        id: response.data.id,
         email: response.data.email,
         first_name: response.data.first_name,
         middle_name: response.data.middle_name,
