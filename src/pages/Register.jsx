@@ -100,6 +100,8 @@ function Register() {
       if (response.status === 200) {
         console.log("Record updated successfully!");
         // Additional logic if needed
+        setRowSelected(false);
+        getAccounts();
       } else {
         console.error("Failed to update record");
       }
@@ -255,7 +257,7 @@ function Register() {
                 </div>
                 <input
                   name="password"
-                  type="text"
+                  type="password"
                   className="input input-bordered w-full "
                   required
                   onChange={(e) => {
@@ -292,13 +294,14 @@ function Register() {
                 </select>
               </label>
             </div>
-
-            <input
-                type="submit"
-                value="Submit"
-                className="btn w-64 flex flex-row"
-                onClick={addAccount}
-              />
+            <div className="flex items-center justify-center">
+              <input
+                  type="submit"
+                  value="Submit"
+                  className="btn w-64 flex flex-row bg-[#426E80] btn-wide shadow-md my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                  onClick={() => addAccount()}
+                />
+            </div>
           </div>
         </form>
         <div className="m-2">
@@ -332,7 +335,7 @@ function Register() {
                     <td>
                       <button
                         onClick={() => onClickEdit(row.id)}
-                        className="btn btn-sm btn-primary"
+                        className="btn btn-sm btn-edit bg-[#426E80] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
                       >
                         Edit
                       </button>
@@ -340,7 +343,7 @@ function Register() {
                     <td>
                       <button
                         onClick={() => deleteAccount(row.id)}
-                        className="btn btn-sm btn-danger"
+                        className="btn btn-sm btn-danger bg-[#Cc0202] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
                       >
                         Delete
                       </button>
@@ -364,13 +367,13 @@ function Register() {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   className="w-6 h-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
@@ -503,7 +506,7 @@ function Register() {
                     </div>
                     <input
                       name="password"
-                      type="text"
+                      type="password"
                       className="input input-bordered w-full "
                       onChange={(e) => {
                         setSelectedRow((prevSelectedRow) => ({
@@ -539,12 +542,14 @@ function Register() {
                   </select>
                 </label>
 
-                <button
-                  className="btn w-64 flex flex-row"
-                  onClick={() => updateAccount(selectedRow.id)}
-                >
-                  Update
-                </button>
+                <div className="flex items-center justify-center">
+                  <button
+                    className="btn w-64 flex flex-row bg-[#426E80] btn-wide shadow-md my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                    onClick={() => updateAccount(selectedRow.id)}
+                  >
+                    Update
+                  </button>
+                </div>
               </div>
             </form>
           </div>

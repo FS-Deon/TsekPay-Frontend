@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const userDataCookie = Cookies.get("userData");
 
   useEffect(() => {
     const checkUserData = () => {
-      const userDataCookie = Cookies.get("userData");
 
       if (!userDataCookie) {
         navigate("/login");
