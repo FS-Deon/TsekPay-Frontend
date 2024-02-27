@@ -38,7 +38,7 @@ function Login() {
         account_type: response.data.account_type,
       };
       axios.defaults.headers.common["Authorization"] = `${userData.token}`;
-      Cookies.set("userData", JSON.stringify(userData), { expires: 99 });
+      Cookies.set("userData", JSON.stringify(userData), { expires: 7 });
       setLoginStatus("Login successful");
       navigate("/dashboard");
     } catch (error) {
