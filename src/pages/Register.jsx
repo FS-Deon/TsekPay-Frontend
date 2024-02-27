@@ -18,17 +18,15 @@ function Register() {
     password: "",
     account_type: "",
   });
-  const [data_table, setDataTable] = useState([]);
+  const [dataTable, setDataTable] = useState([]);
   const [rowSelected, setRowSelected] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
 
   useEffect(() => {
-    const userData = Cookies.get("userData");
     if (!userData) {
-      console.log("EMPTY");
       navigate("/login");
     }
-    viewAccounts();
+    getAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   // Get token from userData cookie
@@ -44,9 +42,8 @@ function Register() {
     const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
+  
   const addAccount = async () => {
-    console.log(accountData);
     try {
       response = await axios.post(
         "http://localhost:3000/account/",
@@ -55,12 +52,13 @@ function Register() {
       if (response) {
         console.log("TRUE");
       }
+      setAccountData("");
     } catch (error) {
       console.error("Error adding account: ", error);
     }
   };
 
-  const viewAccounts = async () => {
+  const getAccounts = async () => {
     try {
       const token = getToken();
       response = await axios.get("http://localhost:3000/account/view/", {
@@ -78,20 +76,51 @@ function Register() {
     }
   };
 
-  const deleteAccount = async (recordID) => {
+  const onClickEdit = (rowId) => {
+    const selectedData = dataTable.find((row) => row.id === rowId)
+    setSelectedRow(selectedData);
+    setRowSelected(true);
+    console.log(selectedData);
+  };
+  const onClickClose = (rowId) => {
+    setSelectedRow("");
+    setRowSelected(false);
+  };
+
+  const updateAccount = async (recordID) => {
+    console.log(selectedRow);
     try {
       const token = getToken();
-      response = await axios.delete(
-        `http://localhost:3000/account/remove/${recordID}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const response = await axios.patch(`http://localhost:3000/account/edit/${recordID}`, selectedRow, {
+        headers: {
+          Authorization: token,
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log("Record updated successfully!");
+        // Additional logic if needed
+        setRowSelected(false);
+        getAccounts();
+      } else {
+        console.error("Failed to update record");
+      }
+    } catch (error) {
+      console.error("Error updating account: ", error);
+    }
+  };
+  
+  const deleteAccount = async (recordID) => {
+    try{
+      const token = getToken();
+      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       if (response.status === 200) {
-        viewAccounts();
+        getAccounts();
         console.log("Record deleted successfully!");
       } else {
         console.error("Failed to delete record");
@@ -104,229 +133,228 @@ function Register() {
   return (
     <>
       <div className="p-4 m-5">
-        <BackButton />
         <div className="m-2">
-          <h1 className="text-3xl font-bold tracking-wide">Register Account</h1>
+          <h1 className="text-3xl font-bold tracking-wide">Accounts</h1>
         </div>
-        <form>
-          {/* Personal Information */}
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-            <div className="flex flex-col md:flex-row">
-              {/* First Name */}
-              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    First Name<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="f_name"
-                  type="text"
-                  maxLength="100"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setFN(e.target.value);
-                  }}
-                />
-              </label>
 
-              {/* Middle Name */}
-              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Middle Name<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="middleName"
-                  type="text"
-                  maxLength="100"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      middle_name: e.target.value,
-                    }));
-                  }}
-                />
-              </label>
 
-              {/* Last Name */}
-              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Last Name<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="lastName"
-                  type="text"
-                  maxLength="100"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      last_name: e.target.value,
-                    }));
-                  }}
-                />
-              </label>
-            </div>
-
-            {/* Date of Birth */}
-            <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-              <div className="label">
-                <span className="label-text">
-                  Date of Birth<span className="text-red-500"> *</span>
-                </span>
-              </div>
-              <input
-                name="dateOfBirth"
-                type="date"
-                className="input input-bordered w-full"
-                required
-                onChange={(e) => {
-                  setAccountData((prevAccountData) => ({
-                    ...prevAccountData,
-                    date_of_birth: e.target.value,
-                  }));
-                }}
-              />
-            </label>
-            <div className="flex flex-col md:flex-row">
-              {/* Email */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Email<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="email"
-                  type="email"
-                  className="input input-bordered w-full "
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      email: e.target.value,
-                    }));
-                  }}
-                />
-              </label>
-              {/* Password */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Password <span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="password"
-                  type="text"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      password: e.target.value,
-                    }));
-                  }}
-                />
-              </label>
-            </div>
-            <div className="flex flex-col md:flex-row">
-              {/* Account Type */}
-              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">Account Type</span>
-                </div>
-                <select
-                  name="accountType"
-                  className="select select-bordered w-full"
-                  required
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      account_type: e.target.value,
-                    }));
-                  }}
-                >
-                  <option value="" hidden>
-                    Account Type
-                  </option>
-                  <option>Manager</option>
-                  <option>Accountant</option>
-                </select>
-              </label>
-            </div>
-
-            <input
-              name="dob"
-              type="date"
-              className="input input-bordered w-full"
-              required
-              onChange={(e) => {
-                setDOB(e.target.value);
-              }}
+        <button
+          className="btn my-4 "
+          onClick={() => document.getElementById("add-form").showModal()}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
             />
-            <div className="flex flex-col md:flex-row">
-              {/* Personal Email */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Email<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="email"
-                  type="email"
-                  className="input input-bordered w-full "
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-              </label>
-              {/* Password */}
-              <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Password <span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="password"
-                  type="text"
-                  className="input input-bordered w-full "
-                  required
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-              </label>
-            </div>
-            {/* Account Type */}
-            <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-              <div className="label">
-                <span className="label-text">Account Type</span>
+          </svg>
+          Add
+        </button>
+          
+        <dialog id="add-form">
+              <button className="m-r ml-auto" onClick={() => document.getElementById("add-form").close()}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+          <form>
+            {/* Personal Information */}
+            <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
+              <div className="flex flex-col md:flex-row">
+                {/* First Name */}
+                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">
+                      First Name<span className="text-red-500"> *</span>
+                    </span>
+                  </div>
+                  <input
+                    name="f_name"
+                    type="text"
+                    maxLength="100"
+                    className="input input-bordered w-full "
+                    value={accountData.first_name}
+                    required
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        first_name: e.target.value,
+                      }));
+                    }}
+                  />
+                </label>
+
+                {/* Middle Name */}
+                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">
+                      Middle Name<span className="text-red-500"> *</span>
+                    </span>
+                  </div>
+                  <input
+                    name="middleName"
+                    type="text"
+                    maxLength="100"
+                    className="input input-bordered w-full "
+                    value={accountData.middle_name}
+                    required
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        middle_name: e.target.value,
+                      }));
+                    }}
+                  />
+                </label>
+
+                {/* Last Name */}
+                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">
+                      Last Name<span className="text-red-500"> *</span>
+                    </span>
+                  </div>
+                  <input
+                    name="lastName"
+                    type="text"
+                    maxLength="100"
+                    className="input input-bordered w-full "
+                    value={accountData.last_name}
+                    required
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        last_name: e.target.value,
+                      }));
+                    }}
+                  />
+                </label>
               </div>
 
-              <input
-                type="submit"
-                value="Submit"
-                className="btn w-64 flex flex-row"
-                onClick={addAccount}
-              />
-            </label>
-          </div>
-        </form>
+              {/* Date of Birth */}
+              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+                <div className="label">
+                  <span className="label-text">
+                    Date of Birth<span className="text-red-500"> *</span>
+                  </span>
+                </div>
+                <input
+                  name="dateOfBirth"
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={accountData.date_of_birth}
+                  required
+                  onChange={(e) => {
+                    setAccountData((prevAccountData) => ({
+                      ...prevAccountData,
+                      date_of_birth: e.target.value,
+                    }));
+                  }}
+                />
+              </label>
+              <div className="flex flex-col md:flex-row">
+                {/* Email */}
+                <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">
+                      Email<span className="text-red-500"> *</span>
+                    </span>
+                  </div>
+                  <input
+                    name="email"
+                    type="email"
+                    className="input input-bordered w-full "
+                    value={accountData.email}
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        email: e.target.value,
+                      }));
+                    }}
+                  />
+                </label>
+                {/* Password */}
+                <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">
+                      Password <span className="text-red-500"> *</span>
+                    </span>
+                  </div>
+                  <input
+                    name="password"
+                    type="password"
+                    className="input input-bordered w-full "
+                    value={accountData.password}
+                    required
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        password: e.target.value,
+                      }));
+                    }}
+                  />
+                </label>
+              </div>
+              <div className="flex flex-col md:flex-row">
+                {/* Account Type */}
+                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
+                  <div className="label">
+                    <span className="label-text">Account Type</span>
+                  </div>
+                  <select
+                    name="accountType"
+                    className="select select-bordered w-full"
+                    required
+                    onChange={(e) => {
+                      setAccountData((prevAccountData) => ({
+                        ...prevAccountData,
+                        account_type: e.target.value,
+                      }));
+                    }}
+                  >
+                    <option value="" hidden>
+                      Account Type
+                    </option>
+                    <option>Manager</option>
+                    <option>Accountant</option>
+                  </select>
+                </label>
+              </div>
+              <div className="flex items-center justify-center">
+                <button
+                    className="btn w-64 flex flex-row bg-[#426E80] btn-wide shadow-md my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                    onClick={() => addAccount()}
+                  >
+                    Submit
+                  </button>
+              </div>
+            </div>
+          </form>
+        </dialog>
         <div className="m-2">
           <h1 className="text-3xl font-bold tracking-wide">Records</h1>
         </div>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-          {data_table ? (
+        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          {dataTable ? (
             <table border="1">
               <thead>
                 <tr>
@@ -336,13 +364,13 @@ function Register() {
                   <th>Middle Name</th>
                   <th>Last Name</th>
                   <th>Account Type</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
+                  <th></th>
+                  <th></th>
                   {/* Add more columns based on your data structure */}
                 </tr>
               </thead>
               <tbody>
-                {data_table.map((row) => (
+                {dataTable.map((row) => (
                   <tr key={row.id}>
                     <td>{row.id}</td>
                     <td>{row.email}</td>
@@ -352,8 +380,8 @@ function Register() {
                     <td>{row.account_type}</td>
                     <td>
                       <button
-                        // onClick={() => handleEdit(row.id)}
-                        className="btn btn-sm btn-primary"
+                        onClick={() => onClickEdit(row.id)}
+                        className="btn btn-sm btn-edit bg-[#426E80] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
                       >
                         Edit
                       </button>
@@ -361,7 +389,7 @@ function Register() {
                     <td>
                       <button
                         onClick={() => deleteAccount(row.id)}
-                        className="btn btn-sm btn-danger"
+                        className="btn btn-sm btn-danger bg-[#Cc0202] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
                       >
                         Delete
                       </button>
@@ -377,7 +405,7 @@ function Register() {
         </div>
 
         {rowSelected ? (
-          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-9">
+          <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-col">
             <div className="flex justify-between items-center">
               <h1 className="text-xl font-bold mx-3">Update Account</h1>
               <button className="m-r ml-auto" onClick={() => onClickClose()}>
@@ -385,13 +413,13 @@ function Register() {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   className="w-6 h-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
@@ -524,7 +552,7 @@ function Register() {
                     </div>
                     <input
                       name="password"
-                      type="text"
+                      type="password"
                       className="input input-bordered w-full "
                       onChange={(e) => {
                         setSelectedRow((prevSelectedRow) => ({
@@ -560,17 +588,19 @@ function Register() {
                   </select>
                 </label>
 
-                <button
-                  className="btn w-64 flex flex-row"
-                  onClick={() => updateAccount(selectedRow.id)}
-                >
-                  Update
-                </button>
+                <div className="flex items-center justify-center">
+                  <button
+                    className="btn w-64 flex flex-row bg-[#426E80] btn-wide shadow-md my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                    onClick={() => updateAccount(selectedRow.id)}
+                  >
+                    Update
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         ) : (
-          <p>&nbsp;</p>
+          <br />
         )}
       </div>
     </>

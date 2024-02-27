@@ -4,8 +4,11 @@ import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
+import DropdownCompany from "../components/DropdownCompany.jsx";
+
 function TsekpayRun() {
   const navigate = useNavigate();
+  const [companyID, setCompanyID] = useState(null);
 
   useEffect(() => {
     const userAuthToken = Cookies.get("userData");
@@ -47,17 +50,19 @@ function TsekpayRun() {
     setSelectedRow(rowData);
   };
 
+  const companyChange = (selectedCompany) => {
+    setCompanyID(selectedCompany);
+  }
+  
   return (
     <>
       <div className="flex flex-row justify-between">
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
         <div className="mr-10 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
-          <select className="select select-bordered w-full max-w-xs px-20">
-            <option value="Fullsuite">Fullsuite</option>
-            <option>Ananda Spa</option>
-            <option>Get Dentals</option>
-          </select>
+
+          <DropdownCompany companyID = {companyChange}></DropdownCompany>
+
         </div>
       </div>
 

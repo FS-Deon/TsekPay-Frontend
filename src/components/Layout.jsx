@@ -23,7 +23,7 @@ function Layout() {
   }, [navigate]);
 
   useEffect(() => {
-    console.log("Ran");
+    // console.log("Ran");
   }, []);
 
   return (
@@ -33,7 +33,7 @@ function Layout() {
       ) : (
         <div>
           <Sidebar />
-          <div className="sm:ml-64 flex flex-col">
+          <div className="md:ml-64 flex flex-col">
             <Header />
             <Outlet />
           </div>

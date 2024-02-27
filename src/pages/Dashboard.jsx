@@ -1,32 +1,27 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const userDataCookie = Cookies.get("userData");
 
   useEffect(() => {
-    const checkUserData = () => {
-      const userDataCookie = Cookies.get("userData");
-
-      if (!userDataCookie) {
-        navigate("/login");
-      } else {
-        setLoading(false);
-      }
-    };
-
     checkUserData();
   }, [navigate]);
 
+  const checkUserData = () => {
+
+    if (!userDataCookie) {
+      navigate("/login");
+    } else {
+      setLoading(true);
+    }
+  };
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
+      {loading &&
         <>
           <div className="flex lg:flex-row flex-col">
             <div className="flex flex-col lg:w-[30%]">
@@ -97,7 +92,7 @@ function Dashboard() {
             </div>
           </div>
         </>
-      )}
+      }
     </>
   );
 }
