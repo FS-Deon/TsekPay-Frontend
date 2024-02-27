@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import NoRecord from "../components/NoRecord";
-import { useState } from "react";
 import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,7 @@ function TsekpayRun() {
   const [data, setData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  const checkbox = useRef(null);
+  //const checkbox = useRef(null);
 
   const handleFileUpload = (e) => {
     const reader = new FileReader();
@@ -40,6 +39,8 @@ function TsekpayRun() {
       setTableHeader(headers);
     };
   };
+
+  console.log(data);
 
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -59,7 +60,9 @@ function TsekpayRun() {
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
         <div className="mr-10 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
+
           <DropdownCompany companyID = {companyChange}></DropdownCompany>
+
         </div>
       </div>
 
@@ -83,7 +86,7 @@ function TsekpayRun() {
                 data-original="#000000"
               />
             </svg>
-            Upload Image
+            Upload Payroll File
             <input
               type="file"
               accept=".xlsx, .xls, .csv"
@@ -153,50 +156,6 @@ function TsekpayRun() {
         </div>
       </form>
 
-      <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
-      <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        {data.length > 0 ? (
-          <div className="overflow-x-auto overflow-scroll h-[55vh]">
-            <table className="table table-xs">
-              <thead className="bg-[#4A6E7E] text-white sticky top-0">
-                <tr>
-                  <th>
-                    <label>
-                      <input
-                        type="checkbox"
-                        className="checkbox bg-[#fff] my-2"
-                      />
-                    </label>
-                  </th>
-                  {Object.keys(data[0]).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row, index) => (
-                  <tr key={index}>
-                    <th>
-                      <label>
-                        <input type="checkbox" className="checkbox" />
-                      </label>
-                    </th>
-                    {Object.values(row).map((value, index) => (
-                      <td key={index}>
-                        <button onClick={() => handleNameClick(row)}>
-                          {value}
-                        </button>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <NoRecord></NoRecord>
-        )}
-      </div>
       {selectedRow && (
         <div className=" flex flex-col">
           <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
@@ -219,7 +178,7 @@ function TsekpayRun() {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row">
-              <div className="w-full lg:w-[25%]">
+              <div className="w-full">
                 <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
@@ -290,65 +249,112 @@ function TsekpayRun() {
                 </div>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Company Deductions</h1>
-                  <h1 className="mx-3 mt-3">2,954</h1>
+                  <h1 className="mx-3 mt-3">SSS (every Payroll)</h1>
+                  <h1 className="mx-3 mt-3">
+                    {" "}
+                    {selectedRow["SSS (every Payroll)"]}
+                  </h1>
                 </div>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Late & Absences</h1>
-                  <h1 className="mx-3 mt-3">750</h1>
+                  <h1 className="mx-3 mt-3">PHIC (every Payroll)</h1>
+                  <h1 className="mx-3 mt-3">0</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">HDMF (every Payroll)</h1>
+                  <h1 className="mx-3 mt-3">0</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">Absences</h1>
+                  <h1 className="mx-3 mt-3">{selectedRow["Absences"]}</h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="mx-3 mt-3">Salary Deduction</h1>
+                  <h1 className="mx-3 mt-3">
+                    {selectedRow["Salary Deduction"]}
+                  </h1>
                 </div>
                 <hr className="mt-1"></hr>
                 <div className="flex flex-row justify-between">
                   <h1 className="font-bold mx-3 mt-3">Total Deduction</h1>
-                  <h1 className="mx-3 mt-3">3,704</h1>
+                  <h1 className="mx-3 mt-3">
+                    {selectedRow["SSS (every Payroll)"] -
+                      selectedRow["Absences"] -
+                      selectedRow["Salary Deduction"]}{" "}
+                  </h1>
+                </div>
+                <hr className="mt-1"></hr>
+                <div className="flex flex-row justify-between">
+                  <h1 className="font-bold mx-3 mt-3">Take Home Pay</h1>
+                  <h1 className="mx-3 mt-3">
+                    {selectedRow["Basic Pay"] +
+                      selectedRow["Meal Allowance (taxable)"] +
+                      selectedRow["Medical Allowance (De minimis)"] +
+                      selectedRow["Medical Allowance (Taxable)"] +
+                      selectedRow[
+                        "Clothing and Laundry Allowance (de minimis)"
+                      ] +
+                      selectedRow["RIce Allowance (De minimis)"] -
+                      selectedRow["SSS (every Payroll)"] -
+                      selectedRow["Absences"] -
+                      selectedRow["Salary Deduction"]}
+                  </h1>
                 </div>
                 <hr className="mt-1"></hr>
               </div>
               {/* <div className="divider divider-horizontal"></div> */}
-              <div className="overflow-x-auto w-full lg:w-[75%]">
-                <table className="table">
-                  {/* head */}
-                  <thead>
-                    <tr>
-                      <th>Pay Items</th>
-                      <th>Rate</th>
-                      <th>QTY</th>
-                      <th>Amount</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* row 1 */}
-                    <tr>
-                      <th>Basic Pay</th>
-                      <td>10,000.00</td>
-                      <td>1</td>
-                      <td>10,000.00</td>
-                      <td>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18 18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
         </div>
       )}
+
+      <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
+      <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
+        {data.length > 0 ? (
+          <div className="overflow-x-auto overflow-scroll h-[55vh]">
+            <table className="table table-xs">
+              <thead className="bg-[#4A6E7E] text-white sticky top-0">
+                <tr>
+                  <th>
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="checkbox bg-[#fff] my-2"
+                      />
+                    </label>
+                  </th>
+                  {Object.keys(data[0]).map((key) => (
+                    <th key={key}>{key}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <label>
+                        <input type="checkbox" className="checkbox" />
+                      </label>
+                    </td>
+                    {Object.values(row).map((value, index) => (
+                      <td key={index}>
+                        <button onClick={() => handleNameClick(row)}>
+                          {value}
+                        </button>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <NoRecord></NoRecord>
+        )}
+      </div>
     </>
   );
 }
