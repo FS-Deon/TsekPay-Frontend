@@ -5,7 +5,6 @@ import {
   Register,
   NonRecurring,
   ActivityLogs,
-  SelectOrg,
   TsekpayRun,
   ManageOrgs,
   PayItems,
@@ -25,7 +24,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/non-recurring" element={<NonRecurring />} />
               <Route path="/activity-logs" element={<ActivityLogs />} />
-              <Route path="/select-orgnazation" element={<SelectOrg />} />
               <Route path="/tsekpay-run" element={<TsekpayRun />} />
               <Route path="/manage-organizations" element={<ManageOrgs />} />
               <Route path="/manage-pay-items" element={<PayItems />} />

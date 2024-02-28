@@ -4,21 +4,33 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import DropdownCompany from "../components/DropdownCompany.jsx";
 
 function TsekpayRun() {
   const navigate = useNavigate();
+  const userData = Cookies.get("userData");
+  const accountID = JSON.parse(userData).id;
   const [companyID, setCompanyID] = useState(null);
+  const [database, setDatabase] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [payItem, setPayItem] = useState({});
 
   useEffect(() => {
-    const userAuthToken = Cookies.get("userData");
-    if (!userAuthToken) {
+    if (!userData) {
       // Redirect to the login page if there is no cookie
       navigate("/login");
     }
-    console.log(userAuthToken);
+    console.log("ACCOUNT ID: ", accountID);
+    getCompanyPayItem(accountID);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
+
+  // Get token from userData cookie
+  const getToken = () => {
+    const userData = JSON.parse(Cookies.get("userData"));
+    return userData.token;
+  };
 
   const [data, setData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
@@ -50,9 +62,56 @@ function TsekpayRun() {
   };
 
   const companyChange = (selectedCompany) => {
-    setCompanyID(selectedCompany);
+    if(selectedCompany != null){
+      setCompanyPayItem(selectedCompany);
+      setCompanyID(selectedCompany);
+    }
   }
   
+  const getCompanyPayItem = async (accountID) => {
+    const token = getToken();
+    await axios.get(`http://localhost:3000/pay-item/data/${accountID}`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then(function(response){
+      const rows = response.data.rows;
+      console.log(response.data.rows);
+      if (rows) {
+        setDatabase(rows);
+      }
+    })
+    .catch(function(error){
+      console.error("Error: ", error);
+    })
+  }
+
+  const setCompanyPayItem = (id) => {
+    const data = database.filter((item) => item.company_id == id);
+
+    // Transform the data array
+    const transformedData = data.reduce((acc, item) => {
+      const { category, name } = item;
+
+      // Find the category object in the accumulator
+      const categoryObject = acc.find(obj => obj[category]);
+
+      if (categoryObject) {
+        // If the category exists, push the name to its array
+        categoryObject[category].push(name);
+      } else {
+        // If the category doesn't exist, create a new object
+        acc.push({ [category]: [name] });
+      }
+
+      return acc;
+    }, []);
+    setCategories(transformedData);
+    console.log("Categories: ", transformedData);
+  }
+
+
   return (
     <>
       <div className="flex flex-row justify-between">
