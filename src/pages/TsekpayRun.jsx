@@ -15,6 +15,10 @@ function TsekpayRun() {
   const [database, setDatabase] = useState([]);
   const [categories, setCategories] = useState([]);
   const [payItem, setPayItem] = useState({});
+  const [data, setData] = useState([]); // Uploaded Excel
+  const [tableHeader, setTableHeader] = useState([]); //Headers for the table
+  const [selectAll, setSelectAll] = useState(false);
+  const [reqInfo, setReqInfo] = useState(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
 
   useEffect(() => {
     if (!userData) {
@@ -22,6 +26,7 @@ function TsekpayRun() {
       navigate("/login");
     }
     console.log("ACCOUNT ID: ", accountID);
+    console.log("ReqINFO: ", reqInfo);
     getCompanyPayItem(accountID);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
@@ -30,10 +35,6 @@ function TsekpayRun() {
     const userData = JSON.parse(Cookies.get("userData"));
     return userData.token;
   };
-
-  const [data, setData] = useState([]);
-  const [tableHeader, setTableHeader] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
   //const checkbox = useRef(null);
 
   const handleFileUpload = (e) => {
@@ -46,9 +47,20 @@ function TsekpayRun() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
-      const headers = parsedData.shift();
-      setData(parsedData);
-      setTableHeader(headers);
+      console.log("Parsed Data", parsedData);
+      const headers = Object.keys(parsedData[0]);
+
+      // Check if required information is equal to the the spreadsheet headers
+      const areEqual = JSON.stringify(headers) == JSON.stringify(reqInfo); 
+      console.log("Are arrays equal:", areEqual);
+      if (areEqual) {
+        console.log("Required Info: ",reqInfo);
+        console.log("Header: ", headers);
+        setData(parsedData);
+        setTableHeader(headers);
+      } else {
+        
+      }
     };
   };
 
@@ -89,6 +101,8 @@ function TsekpayRun() {
   }
 
   const setCompanyPayItem = (id) => {
+    setReqInfo(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
+
     const data = database.filter((item) => item.company_id == id);
 
     // Transform the data array
@@ -105,13 +119,16 @@ function TsekpayRun() {
         // If the category doesn't exist, create a new object
         acc.push({ [category]: [name] });
       }
-
       return acc;
     }, []);
     setCategories(transformedData);
-    console.log("Categories: ", transformedData);
+    const values = transformedData.flatMap(obj => Object.values(obj)[0]);
+    setReqInfo(prevInfo => [...prevInfo, ...values]);
   }
 
+  const generatePDF = () => {
+
+  };
 
   return (
     <>
@@ -119,9 +136,7 @@ function TsekpayRun() {
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
         <div className="mr-10 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
-
           <DropdownCompany companyID = {companyChange}></DropdownCompany>
-
         </div>
       </div>
 
@@ -166,8 +181,9 @@ function TsekpayRun() {
           <button
             className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
             disabled="disabled"
+            onClick={generatePDF}
           >
-            Send Payslip
+            Generate & Send Payslip
           </button>
         </div>
         <div className="divider divider-horizontal"></div>
