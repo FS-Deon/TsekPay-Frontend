@@ -4,6 +4,8 @@ import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import DropdownCompany from "../components/DropdownCompany.jsx";
 
@@ -12,10 +14,11 @@ function TsekpayRun() {
   const userData = Cookies.get("userData");
   const accountID = JSON.parse(userData).id;
   const [companyID, setCompanyID] = useState(null);
-  const [database, setDatabase] = useState([]);
+  const [dbCategoryPayItem, setDatabase] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [payables, setPayables] = useState([]);
   const [payItem, setPayItem] = useState({});
-  const [data, setData] = useState([]); // Uploaded Excel
+  const [dataUploaded, setData] = useState([]); // Uploaded Excel
   const [tableHeader, setTableHeader] = useState([]); //Headers for the table
   const [selectAll, setSelectAll] = useState(false);
   const [reqInfo, setReqInfo] = useState(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
@@ -54,17 +57,19 @@ function TsekpayRun() {
       const areEqual = JSON.stringify(headers) == JSON.stringify(reqInfo); 
       console.log("Are arrays equal:", areEqual);
       if (areEqual) {
+        //Notification for successful upload
+        toast.success('File Upload Successfully!', { autoClose: 3000 });
         console.log("Required Info: ",reqInfo);
         console.log("Header: ", headers);
         setData(parsedData);
         setTableHeader(headers);
       } else {
-        
+        //Notification for failed upload
+        toast.success('File Upload Failed!', { autoClose: 3000 });
       }
     };
   };
 
-  console.log(data);
 
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -103,8 +108,8 @@ function TsekpayRun() {
   const setCompanyPayItem = (id) => {
     setReqInfo(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
 
-    const data = database.filter((item) => item.company_id == id);
-
+    const data = dbCategoryPayItem.filter((item) => item.company_id == id);
+    console.log("Set Company Pay Item: ", data);
     // Transform the data array
     const transformedData = data.reduce((acc, item) => {
       const { category, name } = item;
@@ -121,17 +126,60 @@ function TsekpayRun() {
       }
       return acc;
     }, []);
+
     setCategories(transformedData);
+    console.log("Categories: ", transformedData);
     const values = transformedData.flatMap(obj => Object.values(obj)[0]);
+    setPayables(values);
     setReqInfo(prevInfo => [...prevInfo, ...values]);
   }
 
   const generatePDF = () => {
+    console.log("Data Preparations-------------------------");
+    console.log("Categories: ", categories);
+    console.log("Payables: ", payables);
+    console.log("Required Information: ", reqInfo);
+    console.log("Data Uploaded: ", dataUploaded);
 
+    // Prepare data
+    const transformedData = dataUploaded.map(item => {
+      const transformedItem = { ...item };
+    
+      categories.forEach(categoryObj => {
+        const category = Object.keys(categoryObj)[0]; // Get the category name
+        const categoryValues = categoryObj[category]; // Get the category values
+    
+        transformedItem[category] = categoryValues.map(key => ({
+          [key]: item[key]
+        }));
+        console.log("Payables", payables);
+      });
+    
+      Object.keys(transformedItem).forEach(key => {
+        if (payables.includes(key)) {
+          delete transformedItem[key];
+        }
+      });
+
+      return transformedItem;
+    });
+    console.log(transformedData);
   };
 
   return (
     <>
+      <ToastContainer
+      position="top-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+      />
       <div className="flex flex-row justify-between">
         <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
         <div className="mr-10 my-1 flex flex-col">
@@ -179,8 +227,8 @@ function TsekpayRun() {
           </button>
 
           <button
+            type="button"
             className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-            disabled="disabled"
             onClick={generatePDF}
           >
             Generate & Send Payslip
@@ -388,7 +436,7 @@ function TsekpayRun() {
 
       <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
       <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        {data.length > 0 ? (
+        {dataUploaded.length > 0 ? (
           <div className="overflow-x-auto overflow-scroll h-[55vh]">
             <table className="table table-xs">
               <thead className="bg-[#4A6E7E] text-white sticky top-0">
@@ -401,13 +449,13 @@ function TsekpayRun() {
                       />
                     </label>
                   </th>
-                  {Object.keys(data[0]).map((key) => (
+                  {Object.keys(dataUploaded[0]).map((key) => (
                     <th key={key}>{key}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {data.map((row, index) => (
+                {dataUploaded.map((row, index) => (
                   <tr key={index}>
                     <td>
                       <label>
