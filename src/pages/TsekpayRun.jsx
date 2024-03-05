@@ -18,18 +18,21 @@ function TsekpayRun() {
   const [categories, setCategories] = useState([]);
   const [payables, setPayables] = useState([]);
   const [payItem, setPayItem] = useState({});
-  const [dataUploaded, setData] = useState([]); // Uploaded Excel
+  const [dataUploaded, setDataUploaded] = useState([]); // Uploaded Excel
   const [tableHeader, setTableHeader] = useState([]); //Headers for the table
   const [selectAll, setSelectAll] = useState(false);
   const [reqInfo, setReqInfo] = useState(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
+  const [payrollDates, setPayrollDates] = useState({
+    dateFrom: "",
+    dateTo: "",
+    datePayment: ""
+  });
 
   useEffect(() => {
     if (!userData) {
       // Redirect to the login page if there is no cookie
       navigate("/login");
     }
-    console.log("ACCOUNT ID: ", accountID);
-    console.log("ReqINFO: ", reqInfo);
     getCompanyPayItem(accountID);
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
@@ -50,7 +53,6 @@ function TsekpayRun() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
-      console.log("Parsed Data", parsedData);
       const headers = Object.keys(parsedData[0]);
 
       // Check if required information is equal to the the spreadsheet headers
@@ -59,9 +61,7 @@ function TsekpayRun() {
       if (areEqual) {
         //Notification for successful upload
         toast.success('File Upload Successfully!', { autoClose: 3000 });
-        console.log("Required Info: ",reqInfo);
-        console.log("Header: ", headers);
-        setData(parsedData);
+        setDataUploaded(parsedData);
         setTableHeader(headers);
       } else {
         //Notification for failed upload
@@ -69,7 +69,6 @@ function TsekpayRun() {
       }
     };
   };
-
 
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -95,7 +94,6 @@ function TsekpayRun() {
     })
     .then(function(response){
       const rows = response.data.rows;
-      console.log(response.data.rows);
       if (rows) {
         setDatabase(rows);
       }
@@ -110,6 +108,7 @@ function TsekpayRun() {
 
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
     console.log("Set Company Pay Item: ", data);
+
     // Transform the data array
     const transformedData = data.reduce((acc, item) => {
       const { category, name } = item;
@@ -128,42 +127,50 @@ function TsekpayRun() {
     }, []);
 
     setCategories(transformedData);
-    console.log("Categories: ", transformedData);
     const values = transformedData.flatMap(obj => Object.values(obj)[0]);
     setPayables(values);
     setReqInfo(prevInfo => [...prevInfo, ...values]);
   }
 
-  const generatePDF = () => {
-    console.log("Data Preparations-------------------------");
-    console.log("Categories: ", categories);
-    console.log("Payables: ", payables);
-    console.log("Required Information: ", reqInfo);
-    console.log("Data Uploaded: ", dataUploaded);
+  const prepareDataForPDFGeneration = () => {
+    //Append data to uploaded data
+    const datesAppended =  dataUploaded.map(i => ({
+      ...i,
+      payrollDates
+      }
+    ));
+    
+    const data = datesAppended;
+    // Iterate through the data object
+    data.forEach(item => {
+      // Iterate trhough the categories object
+      categories.forEach(category => {
+        const categoryName = Object.keys(category)[0]; // Get categories
+        const categoryKeys = category[categoryName]; // Get items under categories
 
-    // Prepare data
-    const transformedData = dataUploaded.map(item => {
-      const transformedItem = { ...item };
+        const categoryItems = {}; // Initialize object for holding category items
+        let categoryTotal = 0; // Initialize variable for handling total of the category
     
-      categories.forEach(categoryObj => {
-        const category = Object.keys(categoryObj)[0]; // Get the category name
-        const categoryValues = categoryObj[category]; // Get the category values
+        // Iterate through the items in the category
+        categoryKeys.forEach(key => {
+          if (item[key] !== undefined) { //check if item has value
+            categoryItems[key] = item[key]; // Add item to category object
+            categoryTotal += item[key]; // Add item value to category total
+            delete item[key]; // Remove the item from the main object to avoid duplication
+          }
+        });
     
-        transformedItem[category] = categoryValues.map(key => ({
-          [key]: item[key]
-        }));
-        console.log("Payables", payables);
+        // Add the grouped items and their total to the item under the category name
+        item[categoryName] = { ...categoryItems, Total: categoryTotal };
       });
-    
-      Object.keys(transformedItem).forEach(key => {
-        if (payables.includes(key)) {
-          delete transformedItem[key];
-        }
-      });
-
-      return transformedItem;
     });
-    console.log(transformedData);
+    
+    console.log("Processed Data,", data);
+
+  };
+
+  const generatePDF = () => {
+    
   };
 
   return (
@@ -180,19 +187,76 @@ function TsekpayRun() {
       pauseOnHover
       theme="light"
       />
-      <div className="flex flex-row justify-between">
-        <h1 className="m-5 px-5 text-3xl font-bold">Tsekpay Run</h1>
-        <div className="mr-10 my-1 flex flex-col">
+
+      <div className="flex lg:flex-row flex-col justify-between">
+        <h1 className="m-2 p-2 md:m-5 md:px-5 text-3xl font-bold">Tsekpay Run</h1>
+        <div className="m-2 p-2 md:m-5 md:px-5 lg:mr-10 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
           <DropdownCompany companyID = {companyChange}></DropdownCompany>
         </div>
       </div>
 
-      <form className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        <div className="flex flex-col container w-[25%] m-5">
+      <form className="flex lg:flex-row flex-col m-2 p-2 border-2 border-gray-200 border-solid rounded-lg">
+
+      <div className="container flex flex-col lg:w-[75%]">
+          <h1 className="text-base font-bold">Period Covered</h1>
+          <div className="flex lg:flex-row flex-col">
+            <label className="form-control w-full max-w-xs mx-3">
+              <div className="label">
+                <span className="label-text font-medium text-sm">
+                  Date From
+                </span>
+              </div>
+              <input
+                type="date"
+                className="input input-bordered w-full max-w-xs"
+                onChange={(e) => {
+                  setPayrollDates((prevPayrollDate) => ({
+                  ...prevPayrollDate, 
+                  dateFrom: e.target.value
+                }));
+                }}
+              />
+            </label>
+            <label className="form-control w-full max-w-xs mx-3">
+              <div className="label">
+                <span className="label-text font-medium text-sm">Date To</span>
+              </div>
+              <input
+                type="date"
+                className="input input-bordered w-full max-w-xs"
+                onChange={(e) => {
+                  setPayrollDates((prevPayrollDate) => ({
+                  ...prevPayrollDate, 
+                  dateTo: e.target.value
+                }));
+                }}
+              />
+            </label>
+          </div>
+          <label className="form-control w-full max-w-xs mx-3">
+            <div className="label">
+              <span className="label-text font-medium text-sm">
+                Payment Date
+              </span>
+            </div>
+            <input
+              type="date"
+              className="input input-bordered w-full max-w-xs"
+              onChange={(e) => {
+                setPayrollDates((prevPayrollDate) => ({
+                ...prevPayrollDate, 
+                datePayment: e.target.value
+              }));
+              }}
+            />
+          </label>
+        </div>
+        <div className="divider md:divider-vertical lg:divider-horizontal "></div>
+        <div className="flex flex-col  container lg:w-[25%] ">
           <label
             htmlFor="uploadFile1"
-            className="btn bg-[#426E80] btn-wide shadow-md px-4 m-2 my-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
+            className="btn bg-[#426E80] btn-wide shadow-md px-2 lg:px-4 m-2 my-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -229,53 +293,10 @@ function TsekpayRun() {
           <button
             type="button"
             className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-            onClick={generatePDF}
+            onClick={prepareDataForPDFGeneration}
           >
             Generate & Send Payslip
           </button>
-        </div>
-        <div className="divider divider-horizontal"></div>
-        <div className="container flex flex-col w-[75%]">
-          <h1 className="text-base font-bold">Period Covered</h1>
-          <div className="flex flex-row">
-            <label className="form-control w-full max-w-xs mx-3">
-              <div className="label">
-                <span className="label-text font-medium text-sm">
-                  Date From
-                </span>
-              </div>
-              <input
-                type="date"
-                className="input input-bordered w-full max-w-xs"
-                disabled
-              />
-            </label>
-            <label className="form-control w-full max-w-xs mx-3">
-              <div className="label">
-                <span className="label-text font-medium text-sm">Date To</span>
-              </div>
-              <input
-                type="date"
-                className="input input-bordered w-full max-w-xs"
-                disabled
-              />
-            </label>
-          </div>
-          <label className="form-control w-full max-w-xs mx-3">
-            <div className="label">
-              <span className="label-text font-medium text-sm">
-                Payment Date
-              </span>
-            </div>
-            <input
-              type="date"
-              className="input input-bordered w-full max-w-xs"
-              disabled
-            />
-          </label>
-          <div className="flex justify-end">
-            <button className="btn bg-[#1EBE58] text-white">Upload</button>
-          </div>
         </div>
       </form>
 
