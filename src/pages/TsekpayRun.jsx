@@ -19,9 +19,8 @@ function TsekpayRun() {
   const [payables, setPayables] = useState([]);
   const [payItem, setPayItem] = useState({});
   const [dataUploaded, setDataUploaded] = useState([]); // Uploaded Excel
-  const [tableHeader, setTableHeader] = useState([]); //Headers for the table
   const [selectAll, setSelectAll] = useState(false);
-  const [reqInfo, setReqInfo] = useState(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
+  const [reqInfo, setReqInfo] = useState([]);
   const [payrollDates, setPayrollDates] = useState({
     dateFrom: "",
     dateTo: "",
@@ -55,14 +54,13 @@ function TsekpayRun() {
       const parsedData = XLSX.utils.sheet_to_json(sheet);
       const headers = Object.keys(parsedData[0]);
 
-      // Check if required information is equal to the the spreadsheet headers
-      const areEqual = JSON.stringify(headers) == JSON.stringify(reqInfo); 
+      // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
+      const areEqual = JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort()); 
       console.log("Are arrays equal:", areEqual);
       if (areEqual) {
         //Notification for successful upload
         toast.success('File Upload Successfully!', { autoClose: 3000 });
         setDataUploaded(parsedData);
-        setTableHeader(headers);
       } else {
         //Notification for failed upload
         toast.success('File Upload Failed!', { autoClose: 3000 });
@@ -104,13 +102,11 @@ function TsekpayRun() {
   }
 
   const setCompanyPayItem = (id) => {
-    setReqInfo(["Employee ID", "Last Name", "First Name", "Middle Name", "Email"]);
-
+    // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
-    console.log("Set Company Pay Item: ", data);
 
-    // Transform the data array
-    const transformedData = data.reduce((acc, item) => {
+    // Transform to category object array
+    const categoryPayItem = data.reduce((acc, item) => {
       const { category, name } = item;
 
       // Find the category object in the accumulator
@@ -125,22 +121,35 @@ function TsekpayRun() {
       }
       return acc;
     }, []);
+    setCategories(categoryPayItem);
+    setRequiredInformation(categoryPayItem);
+  }
 
-    setCategories(transformedData);
-    const values = transformedData.flatMap(obj => Object.values(obj)[0]);
+  const setRequiredInformation = (categories) => {
+    setReqInfo(["Employee ID", "Last Name", "First Name", "Middle Name", "Email", "Net Pay"]);
+
+    const totalCategory = [];
+
+    categories.forEach(category => {
+      const categoryName = Object.keys(category)[0]; // Get categories
+      const values = categories[categoryName];
+
+      // Add "Total " + categoryName to the output array, capitalize the first letter of category name
+      const formattedCategoryName = "Total " + categoryName
+      
+      totalCategory.push(formattedCategoryName);
+    });
+
+    let values = categories.flatMap(obj => Object.values(obj)[0]);
+    values = values.concat(totalCategory);
+
     setPayables(values);
     setReqInfo(prevInfo => [...prevInfo, ...values]);
   }
 
   const prepareDataForPDFGeneration = () => {
-    //Append data to uploaded data
-    const datesAppended =  dataUploaded.map(i => ({
-      ...i,
-      payrollDates
-      }
-    ));
-    
-    const data = datesAppended;
+    const data = dataUploaded;
+
     // Iterate through the data object
     data.forEach(item => {
       // Iterate trhough the categories object
@@ -149,28 +158,52 @@ function TsekpayRun() {
         const categoryKeys = category[categoryName]; // Get items under categories
 
         const categoryItems = {}; // Initialize object for holding category items
-        let categoryTotal = 0; // Initialize variable for handling total of the category
     
         // Iterate through the items in the category
         categoryKeys.forEach(key => {
           if (item[key] !== undefined) { //check if item has value
             categoryItems[key] = item[key]; // Add item to category object
-            categoryTotal += item[key]; // Add item value to category total
             delete item[key]; // Remove the item from the main object to avoid duplication
           }
         });
-    
-        // Add the grouped items and their total to the item under the category name
-        item[categoryName] = { ...categoryItems, Total: categoryTotal };
+
+        // Add the category Items object to the original data item under the category name
+        item[categoryName] = { ...categoryItems };
       });
     });
-    
-    console.log("Processed Data,", data);
 
+    //Append data to uploaded data
+
+    // let dateValues = payrollDates.flatMap(obj => Object.values(obj)[0]);
+    const mergedData =  data.map(i => ({
+      ...i,
+      dateFrom: payrollDates.dateFrom,
+      dateTo: payrollDates.dateTo,
+      datePayment: payrollDates.datePayment
+      }
+    ));
+    console.log("Processed Data,", mergedData);
+    return mergedData;
   };
 
-  const generatePDF = () => {
-    
+  const generatePDF = async() => {
+    const data = prepareDataForPDFGeneration();
+    const token = getToken();
+    await axios.post(`http://localhost:5000/generate-and-send`,
+    data,
+    {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then(function(response){
+      if (response) {
+        console.log(true);
+      }
+    })
+    .catch(function(error){
+      console.error("Error: ", error);
+    })
   };
 
   return (
@@ -282,18 +315,10 @@ function TsekpayRun() {
               name="csvFile"
             />
           </label>
-
-          <button
-            className="btn bg-[#5C9CB7] btn-wide shadow-md px-5 m-2  "
-            disabled="disabled"
-          >
-            Payslip PDF Format
-          </button>
-
           <button
             type="button"
             className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-            onClick={prepareDataForPDFGeneration}
+            onClick={generatePDF}
           >
             Generate & Send Payslip
           </button>
