@@ -74,7 +74,7 @@ function Sidebar() {
                   <div>
                     {/* to change */}
                     <Link
-                      to="/login"
+                      to="/profile"
                       className="mb-12 flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-800"
                     >
                       <svg
