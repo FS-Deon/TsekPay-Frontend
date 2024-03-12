@@ -47,7 +47,7 @@ function DropdownCompany({companyID}){
         <>
             {dataTable &&
                 <select
-                    className="select select-bordered w-full max-w-xs px-20"
+                    className="select select-bordered w-full"
                     onChange={(e) => dropdownChange(e.target.value)}
                 >
                     <option value="">None</option>
