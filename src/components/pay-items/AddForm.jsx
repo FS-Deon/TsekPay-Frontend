@@ -1,45 +1,116 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-
+import {
+  checkCategoryName,
+  checkPayItem,
+  showAlert,
+} from "../../assets/global";
 
 function AddForm(props) {
   let response;
-  console.log("Add Form Component: ", props.comp_id);
-  const [payItem, setPayItem] = useState({
-    company_id : "",
-    name : "",
-    category: ""
-  });
-
-  const getToken = () => {
-    const userData = JSON.parse(Cookies.get("userData"));
-    return userData.token;
+  const data = {
+    company_id: props.comp_id,
+    name: "",
+    category: "",
   };
 
+  const [payItem, setPayItem] = useState(data);
+  const [errors, setErrors] = useState(data);
+
+
   const addPayItem = async () => {
+    let status = "";
+    let message = "";
+
     try {
-      response = await axios.post(
-        "http://localhost:3000/pay-item/",
-        payItem, {
-          headers: {
-            Authorization: getToken(),
-          },
-      });
-      if (response) {
-        setPayItem("");
-        console.log("after", payItem);
+      response = await axios.post("/pay-item", payItem);
+      if (response.status === 200) {
+        setPayItem(data);
+        props.action();
+        // console.log("after", payItem);
+        document.getElementById("add-form").close();
+        status = "success";
+        message = "Record was added successfully.";
+      } else {
+        status = "error";
+        message = "Error adding the record";
       }
     } catch (error) {
       console.error("Error adding payable: ", error);
+      status = "error";
+      message = "Error adding the record";
+    } finally {
+      showAlert(status, message);
     }
-  } 
+  };
+
+  //toggle button for submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    //checks if the form is valid
+    if (await isFormValid()) {
+      //call the add function
+      addPayItem();
+    }
+  };
+
+  //on change event for inputs
+  const handleOnChange = async (e) => {
+    const { name, value } = e.target;
+
+    setPayItem({
+      ...payItem,
+      [name]: value,
+      company_id: props.comp_id,
+    });
+
+    //sets error message for firstname input
+    if (name == "name") {
+      if (checkPayItem(value) != "") {
+        setErrors({
+          ...errors,
+          name: checkPayItem(value),
+        });
+      } else {
+        setErrors({ ...errors, name: "" });
+      }
+    }
+
+    //sets error message for middlename input
+    if (name == "category") {
+      if (checkCategoryName(value) != "") {
+        setErrors({
+          ...errors,
+          category: checkCategoryName(value),
+        });
+      } else {
+        setErrors({ ...errors, category: "" });
+      }
+    }
+  };
+
+  const isFormValid = async () => {
+    let newErrors = {};
+
+    if (checkPayItem(payItem.name) != "") {
+      newErrors.name = checkPayItem(payItem.name);
+    }
+
+    if (checkCategoryName(payItem.category) != "") {
+      newErrors.category = checkCategoryName(payItem.category);
+    }
+
+    setErrors({ ...errors, ...newErrors });
+
+    return Object.keys(newErrors).length == 0;
+  };
 
   return (
     <>
       {props.comp_id && (
         <button
-          className="btn my-4 "
+          className="btn"
           onClick={() => document.getElementById("add-form").showModal()}
         >
           <svg
@@ -58,88 +129,111 @@ function AddForm(props) {
           </svg>
           Add
         </button>
-        
       )}
 
       <dialog id="add-form" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h1 className="text-xl font-bold ">Add Pay Item</h1>
-          <button className="ml-auto" onClick={() => document.getElementById("add-form").close()}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="w-6 h-6"
+          <div className="flex justify-between">
+            <h1 className="text-xl font-bold ">Add Pay Item</h1>
+            <button
+              className="ml-auto"
+              onClick={() => document.getElementById("add-form").close()}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18 18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-          <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
-            <div className="label">
-              <span className="label-text">
-                Name<span className="text-red-500"> *</span>
-              </span>
-            </div>
-            <input
-              name="f_name"
-              type="text"
-              maxLength="100"
-              className="input input-bordered w-full "
-              required
-              value={payItem.name}
-              onChange={(e) => {
-                setPayItem((prevPayItem) => ({
-                  ...prevPayItem,
-                  name: e.target.value,
-                  company_id: props.comp_id
-                }));
-              }}
-            />
-          </label>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
 
-          <div className="flex flex-row">
-            <label className="form-control w-full max-w-md md:mb-0 md:mr-4">
+          {/* Name */}
+          <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col w-full">
               <div className="label">
                 <span className="label-text">
-                  Category <span className="text-red-500"> *</span>
+                  Name<span className="text-red-500"> *</span>
                 </span>
               </div>
+              <input
+                className={`input input-bordered w-full ${
+                  errors.name && `input-error`
+                }`}
+                type="text"
+                name="name"
+                value={payItem.name}
+                onChange={(e) => {
+                  handleOnChange(e);
+                }}
+              />
+              {errors.name && (
+                <span className="text-[12px] text-red-500">{errors.name}</span>
+              )}
+            </div>
+          </div>
 
-              <input type="text" list="category"  
-                className="border w-full max-w-xs"
+          {/* Category */}
+          <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col w-full">
+              <div className="label">
+                <span className="label-text">
+                  Category<span className="text-red-500"> *</span>
+                </span>
+              </div>
+              <input
+                className={`input input-bordered w-full ${
+                  errors.category && `input-error`
+                }`}
+                type="text"
+                name="category"
+                list="category"
                 value={payItem.category}
                 onChange={(e) => {
-                  setPayItem((prevPayItem) => ({
-                    ...prevPayItem,
-                    category: e.target.value,
-                    company_id: props.comp_id
-                  }));
+                  handleOnChange(e);
                 }}
               />
               <datalist id="category">
                 <option>Earnings</option>
                 <option>Deduction</option>
               </datalist>
-            </label>
+              {errors.category && (
+                <span className="text-[12px] text-red-500">
+                  {errors.category}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn bg-[#1EBE58] text-white"
-                onClick={() => addPayItem() }
+
+          {/* Submit Button */}
+          <div className="flex md:flex-row gap-2 mt-2 justify-end">
+            <div className="flex flex-col w-full md:w-auto">
+              <button
+                className="btn flex w-full bg-[#426E80] shadow-md text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                onClick={handleSubmit}
               >
                 Add
               </button>
-            </form>
+            </div>
+            <div className="flex flex-col w-full md:w-auto">
+              <button
+                className="btn flex w-full shadow-md"
+                onClick={() => document.getElementById("add-form").close()}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </dialog>
-
     </>
   );
 }
