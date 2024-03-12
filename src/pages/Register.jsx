@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import AddForm from "../components/accounts/AddForm.jsx";
+import EditForm from "../components/accounts/EditForm.jsx";
+import Swal from "sweetalert2";
 
 function Register() {
   const navigate = useNavigate();
@@ -13,7 +16,7 @@ function Register() {
     email: "",
     first_name: "",
     middle_name: "",
-    lastName: "",
+    last_name: "",
     date_of_birth: "",
     password: "",
     account_type: "",
@@ -25,8 +28,9 @@ function Register() {
   useEffect(() => {
     if (!userData) {
       navigate("/login");
+    } else {
+      getAccounts();
     }
-    getAccounts();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   // Get token from userData cookie
@@ -42,13 +46,10 @@ function Register() {
     const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  
+
   const addAccount = async () => {
     try {
-      response = await axios.post(
-        "http://localhost:3000/account/",
-        accountData
-      );
+      response = await axios.post("/account", accountData);
       if (response) {
         console.log("TRUE");
       }
@@ -60,12 +61,7 @@ function Register() {
 
   const getAccounts = async () => {
     try {
-      const token = getToken();
-      response = await axios.get("http://localhost:3000/account/view/", {
-        headers: {
-          Authorization: token,
-        },
-      });
+      response = await axios.get("/account/view/");
       const rows = response.data.rows;
       // Check if response is not null before updating state
       if (rows) {
@@ -77,11 +73,38 @@ function Register() {
   };
 
   const onClickEdit = (rowId) => {
-    const selectedData = dataTable.find((row) => row.id === rowId)
+    const selectedData = dataTable.find((row) => row.id === rowId);
     setSelectedRow(selectedData);
     setRowSelected(true);
     console.log(selectedData);
   };
+
+  const toggleDelete = (rowID) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: "#Cc0202",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //delete account
+        deleteAccount(rowID);
+      }
+    });
+  };
+
+  const showAlert = (status, title) => {
+    Swal.fire({
+      icon: status,
+      title: title,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   const onClickClose = (rowId) => {
     setSelectedRow("");
     setRowSelected(false);
@@ -91,12 +114,16 @@ function Register() {
     console.log(selectedRow);
     try {
       const token = getToken();
-      const response = await axios.patch(`http://localhost:3000/account/edit/${recordID}`, selectedRow, {
-        headers: {
-          Authorization: token,
-        },
-      });
-  
+      const response = await axios.patch(
+        `http://localhost:3000/account/edit/${recordID}`,
+        selectedRow,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
       if (response.status === 200) {
         console.log("Record updated successfully!");
         // Additional logic if needed
@@ -109,253 +136,61 @@ function Register() {
       console.error("Error updating account: ", error);
     }
   };
-  
+
   const deleteAccount = async (recordID) => {
-    try{
+    let status = "";
+    let message = "";
+    try {
       const token = getToken();
-      response = await axios.delete(`http://localhost:3000/account/remove/${recordID}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      response = await axios.delete(
+        `http://localhost:3000/account/remove/${recordID}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
 
       if (response.status === 200) {
-        getAccounts();
-        console.log("Record deleted successfully!");
+        // getAccounts();
+        setDataTable((data) => data.filter((u) => u.id !== recordID));
+        status = "success";
+        message = "Record deleted successfully!";
       } else {
+        status = "error";
+        message = "Failed to delete record";
         console.error("Failed to delete record");
       }
     } catch (error) {
+      status = "error";
+      message = "Failed to delete record";
       console.error("Error viewing accounts: ", error);
+    } finally {
+      showAlert(status, message);
     }
   };
 
   return (
     <>
-      <div className="p-4 m-5">
-        <div className="m-2">
-          <h1 className="text-3xl font-bold tracking-wide">Accounts</h1>
-        </div>
-
-
-        <button
-          className="btn my-4 "
-          onClick={() => document.getElementById("add-form").showModal()}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          Add
-        </button>
-          
-        <dialog id="add-form">
-              <button className="m-r ml-auto" onClick={() => document.getElementById("add-form").close()}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18 18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-          <form>
-            {/* Personal Information */}
-            <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col">
-              <div className="flex flex-col md:flex-row">
-                {/* First Name */}
-                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">
-                      First Name<span className="text-red-500"> *</span>
-                    </span>
-                  </div>
-                  <input
-                    name="f_name"
-                    type="text"
-                    maxLength="100"
-                    className="input input-bordered w-full "
-                    value={accountData.first_name}
-                    required
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        first_name: e.target.value,
-                      }));
-                    }}
-                  />
-                </label>
-
-                {/* Middle Name */}
-                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">
-                      Middle Name<span className="text-red-500"> *</span>
-                    </span>
-                  </div>
-                  <input
-                    name="middleName"
-                    type="text"
-                    maxLength="100"
-                    className="input input-bordered w-full "
-                    value={accountData.middle_name}
-                    required
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        middle_name: e.target.value,
-                      }));
-                    }}
-                  />
-                </label>
-
-                {/* Last Name */}
-                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">
-                      Last Name<span className="text-red-500"> *</span>
-                    </span>
-                  </div>
-                  <input
-                    name="lastName"
-                    type="text"
-                    maxLength="100"
-                    className="input input-bordered w-full "
-                    value={accountData.last_name}
-                    required
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        last_name: e.target.value,
-                      }));
-                    }}
-                  />
-                </label>
-              </div>
-
-              {/* Date of Birth */}
-              <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                <div className="label">
-                  <span className="label-text">
-                    Date of Birth<span className="text-red-500"> *</span>
-                  </span>
-                </div>
-                <input
-                  name="dateOfBirth"
-                  type="date"
-                  className="input input-bordered w-full"
-                  value={accountData.date_of_birth}
-                  required
-                  onChange={(e) => {
-                    setAccountData((prevAccountData) => ({
-                      ...prevAccountData,
-                      date_of_birth: e.target.value,
-                    }));
-                  }}
-                />
-              </label>
-              <div className="flex flex-col md:flex-row">
-                {/* Email */}
-                <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">
-                      Email<span className="text-red-500"> *</span>
-                    </span>
-                  </div>
-                  <input
-                    name="email"
-                    type="email"
-                    className="input input-bordered w-full "
-                    value={accountData.email}
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        email: e.target.value,
-                      }));
-                    }}
-                  />
-                </label>
-                {/* Password */}
-                <label className="form-control w-full max-w-lg md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">
-                      Password <span className="text-red-500"> *</span>
-                    </span>
-                  </div>
-                  <input
-                    name="password"
-                    type="password"
-                    className="input input-bordered w-full "
-                    value={accountData.password}
-                    required
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        password: e.target.value,
-                      }));
-                    }}
-                  />
-                </label>
-              </div>
-              <div className="flex flex-col md:flex-row">
-                {/* Account Type */}
-                <label className="form-control w-full max-w-sm md:mb-0 md:mr-4">
-                  <div className="label">
-                    <span className="label-text">Account Type</span>
-                  </div>
-                  <select
-                    name="accountType"
-                    className="select select-bordered w-full"
-                    required
-                    onChange={(e) => {
-                      setAccountData((prevAccountData) => ({
-                        ...prevAccountData,
-                        account_type: e.target.value,
-                      }));
-                    }}
-                  >
-                    <option value="" hidden>
-                      Account Type
-                    </option>
-                    <option>Manager</option>
-                    <option>Accountant</option>
-                  </select>
-                </label>
-              </div>
-              <div className="flex items-center justify-center">
-                <button
-                    className="btn w-64 flex flex-row bg-[#426E80] btn-wide shadow-md my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
-                    onClick={() => addAccount()}
-                  >
-                    Submit
-                  </button>
-              </div>
+      <div>
+        <div className="flex flex-col md:flex-row w-full gap-3">
+          <div className="flex w-full">
+            <div className="flex-col w-full">
+              <h1 className="text-3xl font-bold tracking-wide">Accounts</h1>
             </div>
-          </form>
-        </dialog>
-        <div className="m-2">
-          <h1 className="text-3xl font-bold tracking-wide">Records</h1>
+            <div className="flex flex-col w-full items-end">
+              <AddForm
+                action={() => {
+                  getAccounts();
+                }}
+              />
+            </div>
+          </div>
         </div>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+
+        <div className="mt-5 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
           {dataTable ? (
-            <table border="1">
+            <table border="1" className="table">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -364,8 +199,7 @@ function Register() {
                   <th>Middle Name</th>
                   <th>Last Name</th>
                   <th>Account Type</th>
-                  <th></th>
-                  <th></th>
+                  <th className="w-40">Actions</th>
                   {/* Add more columns based on your data structure */}
                 </tr>
               </thead>
@@ -379,21 +213,29 @@ function Register() {
                     <td>{row.last_name}</td>
                     <td>{row.account_type}</td>
                     <td>
-                      <button
-                        onClick={() => onClickEdit(row.id)}
-                        className="btn btn-sm btn-edit bg-[#426E80] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
-                      >
-                        Edit
-                      </button>
+                      <div className="flex justify-between gap-2">
+                        <EditForm
+                          action={() => {
+                            getAccounts();
+                          }}
+                          accountID={row.id}
+                          account={row}
+                        />
+                        {/* <button
+                          onClick={() => onClickEdit(row.id)}
+                          className="btn btn-sm btn-edit bg-[#426E80] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80] w-20"
+                        >
+                          Edit
+                        </button> */}
+                        <button
+                          onClick={() => toggleDelete(row.id)}
+                          className="btn btn-sm btn-danger bg-[#Cc0202] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
-                    <td>
-                      <button
-                        onClick={() => deleteAccount(row.id)}
-                        className="btn btn-sm btn-danger bg-[#Cc0202] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
-                      >
-                        Delete
-                      </button>
-                    </td>
+
                     {/* Add more cells based on your data structure */}
                   </tr>
                 ))}
