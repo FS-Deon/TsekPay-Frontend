@@ -35,7 +35,9 @@ function Layout() {
           <Sidebar />
           <div className="md:ml-64 flex flex-col">
             <Header />
-            <Outlet />
+            <div className="mt-2 p-2 md:mt-5 md:p-5">
+              <Outlet />
+            </div>
           </div>
         </div>
       )}

@@ -10,6 +10,20 @@ import {
   PayItems,
 } from "./pages";
 import Layout from "./components/Layout";
+import axios from "axios";
+import Cookies from "js-cookie";
+import Profile from "./pages/Profile";
+
+const getToken = () => {
+  let userData = (Cookies.get("userData") != undefined) ? Cookies.get("userData") : "";
+  if(userData != ""){
+    return JSON.parse(Cookies.get("userData")).token;
+  }
+  return "";
+};
+
+axios.defaults.baseURL = "http://localhost:3000/";
+axios.defaults.headers.common['Authorization'] = getToken();
 
 function App() {
   return (
@@ -27,6 +41,7 @@ function App() {
               <Route path="/tsekpay-run" element={<TsekpayRun />} />
               <Route path="/manage-organizations" element={<ManageOrgs />} />
               <Route path="/manage-pay-items" element={<PayItems />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
