@@ -4,8 +4,8 @@ import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import DropdownCompany from "../components/DropdownCompany.jsx";
 
@@ -17,13 +17,18 @@ function TsekpayRun() {
   const [companyInfo, setCompanyInfo] = useState({});
   const [dbCategoryPayItem, setDatabase] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [dataUploaded, setDataUploaded] = useState([]); // Uploaded Excel
   const [reqInfo, setReqInfo] = useState([]);
   const [payrollDates, setPayrollDates] = useState({
-    dateFrom: "",
-    dateTo: "",
-    datePayment: ""
+    "Date From": "",
+    "Date To": "",
+    "Payment Date": "",
   });
+
+  // Data
+  const [uploadedData, setUploadedData] = useState([]); // Uploaded Excel
+  const [data, setData] = useState([]);
+  //Selected Row
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     if (!userData) {
@@ -38,104 +43,13 @@ function TsekpayRun() {
     const userData = JSON.parse(Cookies.get("userData"));
     return userData.token;
   };
-  //const checkbox = useRef(null);
 
-  const handleFileUpload = (e) => {
-    const reader = new FileReader();
-    reader.readAsBinaryString(e.target.files[0]);
-    reader.onload = (e) => {
-      const data = e.target.result;
-
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const parsedData = XLSX.utils.sheet_to_json(sheet);
-      const headers = Object.keys(parsedData[0]);
-
-      // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
-      const areEqual = JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort()); 
-
-      // console.log("Headers: ", headers);
-      // console.log("Required Info: ", reqInfo);
-      if (areEqual) {
-        //Notification for successful upload
-        toast.success('File Upload Successfully!', { autoClose: 3000 });
-        setDataUploaded(parsedData);
-        console.log("Uploaded Data", parsedData);
-      } else {
-        //Notification for failed upload
-        toast.success('File Upload Failed!', { autoClose: 3000 });
-      }
-    };
-  };
-
-  const [selectedRow, setSelectedRow] = useState(null);
-
-  const handleNameClick = (rowData) => {
+  // Row selection handler
+  const rowClick = (empID) => {
+    const rowData = data.find((row) => row["Employee ID"] === empID);
     // rowData is the data of the selected row
     console.log("Selected Row Data:", rowData);
     setSelectedRow(rowData);
-  };
-
-  const companyChange = (selectedCompany) => {
-    if(selectedCompany != null){
-      setCompanyPayItem(selectedCompany);
-      setCompanyID(selectedCompany);
-    }
-  }
-  
-  const getCompanyPayItem = async (accountID) => {
-    const token = getToken();
-    await axios.get(`http://localhost:3000/pay-item/data/${accountID}`, {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then(function(response){
-      const rows = response.data.rows;
-      if (rows) {
-        setDatabase(rows);
-      }
-    })
-    .catch(function(error){
-      console.error("Error: ", error);
-    })
-  }
-
-  const processData = (data, categories, company) => {
-    const payItems = {};
-    console.log(data);
-    // Iterate in data list
-    data.forEach(item =>{
-      const categoryTotal = {};
-      // Iterate in categories object
-      Object.keys(categories).forEach(category =>{
-        const categoryList = categories[category]; // Get categories
-        const categoryObject = {}
-        // Iterate in category list
-        categoryList.forEach(clItem => {
-          // Check if item value for is undefined
-          if(item[clItem] !== undefined){ 
-            categoryObject[clItem] = item[clItem]; // Put payitem to respective category
-            categoryTotal[category] = (categoryTotal[category] || 0) + item[clItem];
-            delete item[clItem];
-          }
-        });
-        delete item[`Total `+ category];
-        payItems[category] = categoryObject;
-      });
-      item["payItems"] = payItems;
-      item["Totals"] = categoryTotal;
-    });
-    const dateAppended = data.map(i => ({
-      ...i,
-      dateFrom: payrollDates.dateFrom,
-      dateTo: payrollDates.dateTo,
-      datePayment: payrollDates.datePayment,
-      companyInfo
-      }
-    ));
-    return dateAppended;
   };
 
   // Set pay items based on company selected
@@ -167,71 +81,184 @@ function TsekpayRun() {
     console.log("Category Pay Item: ", categoryPayItem);
     setCategories(categoryPayItem);
     setRequiredInformation(categoryPayItem);
-  }
+  };
 
   // Set required information for updloaded data
   const setRequiredInformation = (categories) => {
-    setReqInfo(["Employee ID", "Last Name", "First Name", "Middle Name", "Email", "Net Pay"]);
+    setReqInfo([
+      "Employee ID",
+      "Last Name",
+      "First Name",
+      "Middle Name",
+      "Email",
+      "Net Pay",
+    ]);
     const totalCategory = [];
 
-    Object.keys(categories).forEach(category => {
+    Object.keys(categories).forEach((category) => {
       const values = categories[category];
       // Add "Total " + categoryName to the output array, capitalize the first letter of category name
-      const formattedCategoryName = "Total " + category
+      const formattedCategoryName = "Total " + category;
       totalCategory.push(formattedCategoryName);
     });
-    let values = Object.values(categories).flatMap(obj => obj);
+    let values = Object.values(categories).flatMap((obj) => obj);
     values = values.concat(totalCategory);
-    setReqInfo(prevInfo => [...prevInfo, ...values]);
-  }
+    setReqInfo((prevInfo) => [...prevInfo, ...values]);
+  };
 
-  const generatePDF = async() => {
-    const data = processData(dataUploaded, categories, companyInfo);
+  const appendDate = (data) => {
+    const appended = data.map((i) => ({
+      ...i,
+      "Date From": payrollDates["Date From"],
+      "Date To": payrollDates["Date To"],
+      "Date Payment": payrollDates["Payment Date"],
+    }));
+    return appended;
+  };
+
+  //Upload file and check if it has the same columns with required information
+  const uploadFile = (e) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(e.target.files[0]);
+    reader.onload = (e) => {
+      const data = e.target.result;
+
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const parsedData = XLSX.utils.sheet_to_json(sheet);
+      const headers = Object.keys(parsedData[0]);
+
+      // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
+      const areEqual =
+        JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort());
+      // console.log("Headers: ", headers);
+      // console.log("Required Info: ", reqInfo);
+      if (areEqual) {
+        //Notification for successful upload
+        toast.success("File Upload Successfully!", { autoClose: 3000 });
+        setUploadedData(parsedData);
+        const dateAppended = appendDate(parsedData);
+        const processedData = processData(dateAppended);
+        setData(processedData);
+      } else {
+        //Notification for failed upload
+        toast.success("File Upload Failed!", { autoClose: 3000 });
+      }
+    };
+  };
+
+  const companyChange = (selectedCompany) => {
+    if (selectedCompany != null) {
+      setCompanyPayItem(selectedCompany);
+      setCompanyID(selectedCompany);
+    }
+  };
+
+  const getCompanyPayItem = async (accountID) => {
+    const token = getToken();
+    await axios
+      .get(`http://localhost:3000/pay-item/data/${accountID}`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then(function (response) {
+        const rows = response.data.rows;
+        if (rows) {
+          setDatabase(rows);
+        }
+      })
+      .catch(function (error) {
+        console.error("Error: ", error);
+      });
+  };
+
+  const appendCompany = (data) => {
+    const appended = data.map((i) => ({
+      ...i,
+      companyInfo,
+    }));
+    console.log("Appended Data", appended);
+    return appended;
+  };
+
+  const processData = (data) => {
+    // Iterate in data list
+    data.forEach((item) => {
+      const categoryTotal = {};
+      const payItems = {};
+      // Iterate in categories object
+      Object.keys(categories).forEach((category) => {
+        const categoryList = categories[category]; // Get categories
+        const categoryObject = {};
+        // Iterate in category list
+        categoryList.forEach((clItem) => {
+          // Check if item value for is undefined
+          if (item[clItem] !== undefined) {
+            categoryObject[clItem] = item[clItem]; // Put payitem to respective category
+            categoryTotal[category] =
+              (categoryTotal[category] || 0) + (item[clItem] || 0);
+            delete item[clItem];
+          }
+        });
+        delete item[`Total ` + category];
+        payItems[category] = categoryObject;
+      });
+      item["Pay Items"] = payItems;
+      item["Totals"] = categoryTotal;
+    });
+
+    return data;
+  };
+
+  const generatePDF = async () => {
+    const data = processData(uploadedData);
     console.log("Data to Send: ", data);
     const token = getToken();
-    await axios.post(`http://localhost:5000/generate-and-send`,
-    data,
-    {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then(function(response){
-      if (response) {
-        console.log(true);
-      }
-    })
-    .catch(function(error){
-      console.error("Error: ", error);
-    })
+    await axios
+      .post(`http://localhost:5000/generate-and-send`, data, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then(function (response) {
+        if (response) {
+          console.log(true);
+        }
+      })
+      .catch(function (error) {
+        console.error("Error: ", error);
+      });
   };
 
   return (
     <>
       <ToastContainer
-      position="top-center"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
 
       <div className="flex lg:flex-row flex-col justify-between">
-        <h1 className="m-2 p-2 md:m-5 md:px-5 text-3xl font-bold">Tsekpay Run</h1>
+        <h1 className="m-2 p-2 md:m-5 md:px-5 text-3xl font-bold">
+          Tsekpay Run
+        </h1>
         <div className="m-2 p-2 md:m-5 md:px-5 lg:mr-10 my-1 flex flex-col">
           <h3 className="text-[13px] font-regular text-white">Client</h3>
-          <DropdownCompany companyID = {companyChange}></DropdownCompany>
+          <DropdownCompany companyID={companyChange}></DropdownCompany>
         </div>
       </div>
 
       <form className="flex lg:flex-row flex-col m-2 p-2 border-2 border-gray-200 border-solid rounded-lg">
-
-      <div className="container flex flex-col lg:w-[75%]">
+        <div className="container flex flex-col lg:w-[75%]">
           <h1 className="text-base font-bold">Period Covered</h1>
           <div className="flex lg:flex-row flex-col">
             <label className="form-control w-full max-w-xs mx-3">
@@ -245,9 +272,9 @@ function TsekpayRun() {
                 className="input input-bordered w-full max-w-xs"
                 onChange={(e) => {
                   setPayrollDates((prevPayrollDate) => ({
-                  ...prevPayrollDate, 
-                  dateFrom: e.target.value
-                }));
+                    ...prevPayrollDate,
+                    "Date From": e.target.value,
+                  }));
                 }}
               />
             </label>
@@ -260,9 +287,9 @@ function TsekpayRun() {
                 className="input input-bordered w-full max-w-xs"
                 onChange={(e) => {
                   setPayrollDates((prevPayrollDate) => ({
-                  ...prevPayrollDate, 
-                  dateTo: e.target.value
-                }));
+                    ...prevPayrollDate,
+                    "Date To": e.target.value,
+                  }));
                 }}
               />
             </label>
@@ -278,9 +305,9 @@ function TsekpayRun() {
               className="input input-bordered w-full max-w-xs"
               onChange={(e) => {
                 setPayrollDates((prevPayrollDate) => ({
-                ...prevPayrollDate, 
-                datePayment: e.target.value
-              }));
+                  ...prevPayrollDate,
+                  "Payment Date": e.target.value,
+                }));
               }}
             />
           </label>
@@ -309,7 +336,7 @@ function TsekpayRun() {
             <input
               type="file"
               accept=".xlsx, .xls, .csv"
-              onChange={handleFileUpload}
+              onChange={uploadFile}
               id="uploadFile1"
               className="hidden"
               name="csvFile"
@@ -330,151 +357,66 @@ function TsekpayRun() {
           <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-col mx-10">
             <div className="bg-[#4A6E7E] text-white rounded-t-lg w-full flex flex-col">
               <h1 className="font-bold text-2xl py-3 mx-3">
-                {selectedRow["Name"]}
+                {selectedRow["First Name"]}
+                &nbsp;
+                {selectedRow["Middle Name"]}
+                &nbsp;
+                {selectedRow["Last Name"]}
               </h1>
               <div className="flex flex-col lg:flex-row my-3">
                 <h2 className="mx-4">
                   <strong>Email: </strong>
-                  {selectedRow["Email Address"]}
-                </h2>
-                <h2 className="mx-4">
-                  <strong>Tax Number: </strong>
-                  {selectedRow["Tin"]}
-                </h2>
-                <h2 className="mx-4">
-                  <strong>Ordinary Rate: </strong>000000000000
+                  {selectedRow["Email"]}
                 </h2>
               </div>
             </div>
             <div className="flex flex-col lg:flex-row">
               <div className="w-full">
                 <h1 className="font-bold mx-3 mt-3">Pay Calculation</h1>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="font-bold mx-3 mt-3">Earnings</h1>
-                  <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Basic Pay</h1>
-                  <h1 className="mx-3 mt-3">{selectedRow["Basic Pay"]}</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">
-                    Clothing and Laundry Allowance (de minimis)
-                  </h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Clothing and Laundry Allowance (de minimis)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Meal Allowance (taxable)</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Meal Allowance (taxable)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Medical Allowance (De minimis)</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Medical Allowance (De minimis)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Medical Allowance (Taxable)</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Medical Allowance (Taxable)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Rice Allowance (De minimis)</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["RIce Allowance (De minimis)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="font-bold mx-3 mt-3">Total Earnings</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Basic Pay"] +
-                      selectedRow["Meal Allowance (taxable)"] +
-                      selectedRow["Medical Allowance (De minimis)"] +
-                      selectedRow["Medical Allowance (Taxable)"] +
-                      selectedRow[
-                        "Clothing and Laundry Allowance (de minimis)"
-                      ] +
-                      selectedRow["RIce Allowance (De minimis)"]}
-                  </h1>
-                </div>
+
+                {Object.entries(selectedRow["Pay Items"]).map(
+                  ([category, payItems]) => (
+                    <>
+                      <hr className="mt-1"></hr>
+                      <div
+                        className="flex flex-row justify-between"
+                        key={category}
+                      >
+                        <h1 className="font-bold mx-3 mt-3">{category}</h1>
+                        <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
+                      </div>
+                      {Object.entries(payItems).map(([payItem, amount]) => (
+                        <>
+                          <hr className="mt-1"></hr>
+                          <div
+                            className="flex flex-row justify-between"
+                            key={payItem}
+                          >
+                            <h1 className="mx-3 mt-3">{payItem}</h1>
+                            <h1 className="mx-3 mt-3">{amount}</h1>
+                          </div>
+                        </>
+                      ))}
+                      <hr className="mt-1"></hr>
+                      <div className="flex flex-row justify-between">
+                        <h1 className="font-bold mx-3 mt-3">
+                          Total {category}
+                        </h1>
+                        <h1 className="mx-3 mt-3">
+                          {selectedRow["Totals"][category]}
+                        </h1>
+                      </div>
+                    </>
+                  )
+                )}
 
                 <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="font-bold mx-3 mt-3">Deductions</h1>
-                  <h1 className="font-bold mx-3 mt-3">Amount PHP</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">SSS (every Payroll)</h1>
-                  <h1 className="mx-3 mt-3">
-                    {" "}
-                    {selectedRow["SSS (every Payroll)"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">PHIC (every Payroll)</h1>
-                  <h1 className="mx-3 mt-3">0</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">HDMF (every Payroll)</h1>
-                  <h1 className="mx-3 mt-3">0</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Absences</h1>
-                  <h1 className="mx-3 mt-3">{selectedRow["Absences"]}</h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="mx-3 mt-3">Salary Deduction</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Salary Deduction"]}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
-                  <h1 className="font-bold mx-3 mt-3">Total Deduction</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["SSS (every Payroll)"] -
-                      selectedRow["Absences"] -
-                      selectedRow["Salary Deduction"]}{" "}
-                  </h1>
-                </div>
-                <hr className="mt-1"></hr>
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row justify-between border-t-3">
                   <h1 className="font-bold mx-3 mt-3">Take Home Pay</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Basic Pay"] +
-                      selectedRow["Meal Allowance (taxable)"] +
-                      selectedRow["Medical Allowance (De minimis)"] +
-                      selectedRow["Medical Allowance (Taxable)"] +
-                      selectedRow[
-                        "Clothing and Laundry Allowance (de minimis)"
-                      ] +
-                      selectedRow["RIce Allowance (De minimis)"] -
-                      selectedRow["SSS (every Payroll)"] -
-                      selectedRow["Absences"] -
-                      selectedRow["Salary Deduction"]}
-                  </h1>
+                  <h1 className="mx-3 mt-3">{selectedRow["Net Pay"]}</h1>
                 </div>
                 <hr className="mt-1"></hr>
               </div>
-              {/* <div className="divider divider-horizontal"></div> */}
             </div>
           </div>
         </div>
@@ -482,7 +424,7 @@ function TsekpayRun() {
 
       <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
       <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        {dataUploaded.length > 0 ? (
+        {uploadedData.length > 0 ? (
           <div className="overflow-x-auto overflow-scroll h-[55vh]">
             <table className="table table-xs">
               <thead className="bg-[#4A6E7E] text-white sticky top-0">
@@ -495,13 +437,13 @@ function TsekpayRun() {
                       />
                     </label>
                   </th>
-                  {Object.keys(dataUploaded[0]).map((key) => (
+                  {Object.keys(uploadedData[0]).map((key) => (
                     <th key={key}>{key}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {dataUploaded.map((row, index) => (
+                {uploadedData.map((row, index) => (
                   <tr key={index}>
                     <td>
                       <label>
@@ -510,7 +452,7 @@ function TsekpayRun() {
                     </td>
                     {Object.values(row).map((value, index) => (
                       <td key={index}>
-                        <button onClick={() => handleNameClick(row["Employee ID"])}>
+                        <button onClick={() => rowClick(row["Employee ID"])}>
                           {value}
                         </button>
                       </td>
