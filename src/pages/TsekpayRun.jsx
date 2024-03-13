@@ -13,20 +13,17 @@ function TsekpayRun() {
   const navigate = useNavigate();
   const userData = Cookies.get("userData");
   const accountID = JSON.parse(userData).id;
+
   const [companyID, setCompanyID] = useState(null);
-  const [companyInfo, setCompanyInfo] = useState({});
-  const [dbCategoryPayItem, setDatabase] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [reqInfo, setReqInfo] = useState([]);
-  const [payrollDates, setPayrollDates] = useState({
-    "Date From": "",
-    "Date To": "",
-    "Payment Date": "",
-  });
+  const [companyInfo, setCompanyInfo] = useState({}); // Contains company name and address
+  const [dbCategoryPayItem, setDatabase] = useState([]); // Contains all pay items for the current user
+  const [categories, setCategories] = useState([]); // Categories(per company)
+  const [reqInfo, setReqInfo] = useState([]); // Required Column Headers
 
   // Data
-  const [uploadedData, setUploadedData] = useState([]); // Uploaded Excel
-  const [data, setData] = useState([]);
+  const [dataUploaded, setDataUploaded] = useState([]); // Uploaded Spreadsheet data
+  const [dataProcessed, setProcessedData] = useState([]); // Processed uploaded data with date
+  const [Dates, setDates] = useState({}); // Dates
   //Selected Row
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -45,7 +42,7 @@ function TsekpayRun() {
   };
 
   // Row selection handler
-  const rowClick = (empID) => {
+  const rowClick = (empID, data) => {
     const rowData = data.find((row) => row["Employee ID"] === empID);
     // rowData is the data of the selected row
     console.log("Selected Row Data:", rowData);
@@ -60,6 +57,7 @@ function TsekpayRun() {
     console.log(data);
     const { company_name, address } = data[0];
     setCompanyInfo({ company_name, address });
+
     // Transform to category object
     const categoryPayItem = data.reduce((acc, item) => {
       const { category, name } = item;
@@ -78,7 +76,6 @@ function TsekpayRun() {
       return acc;
     }, {});
 
-    console.log("Category Pay Item: ", categoryPayItem);
     setCategories(categoryPayItem);
     setRequiredInformation(categoryPayItem);
   };
@@ -106,16 +103,6 @@ function TsekpayRun() {
     setReqInfo((prevInfo) => [...prevInfo, ...values]);
   };
 
-  const appendDate = (data) => {
-    const appended = data.map((i) => ({
-      ...i,
-      "Date From": payrollDates["Date From"],
-      "Date To": payrollDates["Date To"],
-      "Date Payment": payrollDates["Payment Date"],
-    }));
-    return appended;
-  };
-
   //Upload file and check if it has the same columns with required information
   const uploadFile = (e) => {
     const reader = new FileReader();
@@ -137,10 +124,10 @@ function TsekpayRun() {
       if (areEqual) {
         //Notification for successful upload
         toast.success("File Upload Successfully!", { autoClose: 3000 });
-        setUploadedData(parsedData);
+        setDataUploaded(parsedData);
         const dateAppended = appendDate(parsedData);
         const processedData = processData(dateAppended);
-        setData(processedData);
+        setProcessedData(processedData);
       } else {
         //Notification for failed upload
         toast.success("File Upload Failed!", { autoClose: 3000 });
@@ -174,15 +161,24 @@ function TsekpayRun() {
       });
   };
 
+  const appendDate = (data) => {
+    const appended = data.map((i) => ({
+      ...i,
+      Dates,
+    }));
+    return appended;
+  };
+
   const appendCompany = (data) => {
     const appended = data.map((i) => ({
       ...i,
       companyInfo,
     }));
-    console.log("Appended Data", appended);
     return appended;
   };
 
+  // Groups Pay Items into categories and store it in Pay Items objext
+  // Gets Total per category and put it in Totals object
   const processData = (data) => {
     // Iterate in data list
     data.forEach((item) => {
@@ -193,12 +189,11 @@ function TsekpayRun() {
         const categoryList = categories[category]; // Get categories
         const categoryObject = {};
         // Iterate in category list
+        categoryTotal[category] = item["Total " + category];
         categoryList.forEach((clItem) => {
           // Check if item value for is undefined
           if (item[clItem] !== undefined) {
             categoryObject[clItem] = item[clItem]; // Put payitem to respective category
-            categoryTotal[category] =
-              (categoryTotal[category] || 0) + (item[clItem] || 0);
             delete item[clItem];
           }
         });
@@ -208,12 +203,12 @@ function TsekpayRun() {
       item["Pay Items"] = payItems;
       item["Totals"] = categoryTotal;
     });
-
+    console.log("Processed Data: ", data);
     return data;
   };
 
   const generatePDF = async () => {
-    const data = processData(uploadedData);
+    const data = appendCompany(dataProcessed);
     console.log("Data to Send: ", data);
     const token = getToken();
     await axios
@@ -271,9 +266,9 @@ function TsekpayRun() {
                 type="date"
                 className="input input-bordered w-full max-w-xs"
                 onChange={(e) => {
-                  setPayrollDates((prevPayrollDate) => ({
+                  setDates((prevPayrollDate) => ({
                     ...prevPayrollDate,
-                    "Date From": e.target.value,
+                    From: e.target.value,
                   }));
                 }}
               />
@@ -286,9 +281,9 @@ function TsekpayRun() {
                 type="date"
                 className="input input-bordered w-full max-w-xs"
                 onChange={(e) => {
-                  setPayrollDates((prevPayrollDate) => ({
+                  setDates((prevPayrollDate) => ({
                     ...prevPayrollDate,
-                    "Date To": e.target.value,
+                    To: e.target.value,
                   }));
                 }}
               />
@@ -304,9 +299,9 @@ function TsekpayRun() {
               type="date"
               className="input input-bordered w-full max-w-xs"
               onChange={(e) => {
-                setPayrollDates((prevPayrollDate) => ({
+                setDates((prevPayrollDate) => ({
                   ...prevPayrollDate,
-                  "Payment Date": e.target.value,
+                  Payment: e.target.value,
                 }));
               }}
             />
@@ -424,7 +419,7 @@ function TsekpayRun() {
 
       <h1 className="m-5 px-5 text-l font-bold">Payroll File</h1>
       <div className="m-2 border-2 border-gray-200 border-solid rounded-lg flex flex-row mx-10">
-        {uploadedData.length > 0 ? (
+        {dataUploaded.length > 0 ? (
           <div className="overflow-x-auto overflow-scroll h-[55vh]">
             <table className="table table-xs">
               <thead className="bg-[#4A6E7E] text-white sticky top-0">
@@ -437,13 +432,13 @@ function TsekpayRun() {
                       />
                     </label>
                   </th>
-                  {Object.keys(uploadedData[0]).map((key) => (
+                  {Object.keys(dataUploaded[0]).map((key) => (
                     <th key={key}>{key}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {uploadedData.map((row, index) => (
+                {dataUploaded.map((row, index) => (
                   <tr key={index}>
                     <td>
                       <label>
@@ -452,7 +447,11 @@ function TsekpayRun() {
                     </td>
                     {Object.values(row).map((value, index) => (
                       <td key={index}>
-                        <button onClick={() => rowClick(row["Employee ID"])}>
+                        <button
+                          onClick={() =>
+                            rowClick(row["Employee ID"], dataProcessed)
+                          }
+                        >
                           {value}
                         </button>
                       </td>
