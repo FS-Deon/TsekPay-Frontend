@@ -130,8 +130,8 @@ function TsekpayRun() {
       // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
       const areEqual =
         JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort());
-      // console.log("Headers: ", headers);
-      // console.log("Required Info: ", reqInfo);
+      console.log("Headers: ", headers);
+      console.log("Required Info: ", reqInfo);
       if (areEqual) {
         //Notification for successful upload
         toast.success("File Upload Successfully!", { autoClose: 3000 });
@@ -535,3 +535,4 @@ function TsekpayRun() {
 }
 
 export default TsekpayRun;
+
