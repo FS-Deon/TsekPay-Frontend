@@ -129,6 +129,22 @@ const isEmailExists = async (value) => {
   return false;
 };
 
+const checkCompanyName = (value) => {
+  let error = "";
+  if (value == "") {
+    error = "Company Name is required";
+  }
+  return error;
+};
+
+const checkAddress = (value) => {
+  let error = "";
+  if (value == "") {
+    error = "Address is required";
+  }
+  return error;
+};
+
 const getAge = (dob) => {
   let year = dob.split("-")[0];
   let month = dob.split("-")[1];
@@ -170,5 +186,7 @@ export {
   checkAccountType,
   checkPayItem,
   checkCategoryName,
-  formatDate
+  formatDate,
+  checkCompanyName,
+  checkAddress
 };
