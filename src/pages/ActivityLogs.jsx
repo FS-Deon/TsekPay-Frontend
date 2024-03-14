@@ -1,20 +1,30 @@
+import { useState } from "react";
+
 function ActivityLogs() {
+  const [dataTable, setDataTable] = useState([]);
+
   return (
     <>
-      <div className="container">
-        <div className="m-2 text-3xl font-bold">
-          <p>Activity Logs</p>
+      <div>
+        <div className="flex flex-col md:flex-row w-full gap-3">
+          <div className="flex w-full">
+            <div className="flex-col w-full">
+              <h1 className="text-3xl font-bold tracking-wide">
+                Activity Logs
+              </h1>
+            </div>
+            <div className="flex flex-col w-full items-end"></div>
+          </div>
         </div>
-        <div className="m-2 p-3 border-2 border-gray-200 border-solid rounded-lg">
-          <div className="overflow-x-auto">
-            <table className="table">
-              {/* head */}
+
+        <div className="mt-5 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          {dataTable ? (
+            <table border="1" className="table">
               <thead>
                 <tr>
                   <th>Date</th>
                   <th>Transaction</th>
-
-                  <th></th>
+                  {/* Add more columns based on your data structure */}
                 </tr>
               </thead>
               <tbody>
@@ -36,17 +46,16 @@ function ActivityLogs() {
                 </tr>
                 {/* row 2 */}
               </tbody>
-              {/* foot */}
               <tfoot>
                 <tr>
                   <th>Date</th>
                   <th>Transaction</th>
-
-                  <th></th>
                 </tr>
               </tfoot>
             </table>
-          </div>
+          ) : (
+            <p>No data available.</p>
+          )}
         </div>
       </div>
     </>
