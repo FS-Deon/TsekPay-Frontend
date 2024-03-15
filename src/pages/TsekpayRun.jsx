@@ -231,6 +231,34 @@ function TsekpayRun() {
     return data;
   };
 
+  const sendData = () => {
+    // Insert to database
+    insertToDB();
+
+    // Generate and Send PDF
+    generatePDF();
+  };
+  const insertToDB = async () => {
+    const data = dataProcessed.map((items) => ({
+      companyID,
+      ...items,
+    }));
+
+    const token = getToken();
+    await axios
+      .post(`http://localhost:3000/payslip`, data, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then(function (response) {
+        console.log("inserted");
+      })
+      .catch(function (error) {
+        console.error("Error: ", error);
+      });
+  };
+
   const generatePDF = async () => {
     const data = appendCompany(dataProcessed);
     console.log("Data to Send: ", data);
@@ -418,7 +446,7 @@ function TsekpayRun() {
                 <button
                   type="button"
                   className="btn bg-[#5C9CB7] shadow-md w-full"
-                  onClick={generatePDF}
+                  onClick={sendData}
                   disabled={!sendEnable}
                 >
                   Generate & Send Payslip
