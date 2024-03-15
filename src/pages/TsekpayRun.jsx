@@ -21,6 +21,13 @@ function TsekpayRun() {
     "Pay Items": {},
     Totals: {},
   };
+
+  let dates = {
+    From: "",
+    To: "",
+    Payment: "",
+  };
+
   const navigate = useNavigate();
   const userData = Cookies.get("userData");
   const accountID = JSON.parse(userData).id;
@@ -34,9 +41,13 @@ function TsekpayRun() {
   // Data
   const [dataUploaded, setDataUploaded] = useState([]); // Uploaded Spreadsheet data
   const [dataProcessed, setProcessedData] = useState([]); // Processed uploaded data with date
-  const [Dates, setDates] = useState({}); // Dates
+  const [Dates, setDates] = useState(dates); // Dates
   //Selected Row
   const [selectedRow, setSelectedRow] = useState(rowData);
+
+  const [dateEnable, setDateEnable] = useState(false);
+  const [uploadEnable, setUploadEnable] = useState(false);
+  const [sendEnable, setSendEnable] = useState(false);
 
   useEffect(() => {
     if (!userData) {
@@ -139,6 +150,7 @@ function TsekpayRun() {
         const dateAppended = appendDate(parsedData);
         const processedData = processData(dateAppended);
         setProcessedData(processedData);
+        setSendEnable(true);
       } else {
         //Notification for failed upload
         toast.success("File Upload Failed!", { autoClose: 3000 });
@@ -150,6 +162,7 @@ function TsekpayRun() {
     if (selectedCompany != null) {
       setCompanyPayItem(selectedCompany);
       setCompanyID(selectedCompany);
+      setDateEnable(true);
     }
   };
 
@@ -246,6 +259,44 @@ function TsekpayRun() {
       });
   };
 
+  const onDateChange = (e) => {
+    const { name, value } = e.target;
+
+    setDates((prevPayrollDate) => ({
+      ...prevPayrollDate,
+      [name]: value,
+    }));
+
+    let counter = 0;
+    // test();
+    // if (name == "From") {
+    //   console.log(Dates);
+    // }
+    // if (name == "To") {
+    //   console.log(Dates);
+    // }
+    // if (name == "Payment") {
+    //   console.log(Dates);
+    // }
+  };
+
+  useEffect(() => {
+    let dateLength = Object.values(Dates).filter((date) => {
+      if (date == "" || date == null) {
+        return false;
+      }
+      return true;
+    }).length;
+
+    if (dateLength == Object.values(Dates).length) {
+      //enable upload button
+      setUploadEnable(true);
+    } else {
+      //disable upload button
+      setUploadEnable(false);
+    }
+  }, [Dates]);
+
   return (
     <>
       <ToastContainer
@@ -269,108 +320,115 @@ function TsekpayRun() {
             </div>
           </div>
           <div className="flex-col">
-            <DropdownCompany companyID={companyChange}></DropdownCompany>
+            <DropdownCompany companyID={companyChange} />
           </div>
         </div>
 
-        <form className="flex lg:flex-row flex-col m-2 p-2 border-2 border-gray-200 border-solid rounded-lg">
-          <div className="container flex flex-col lg:w-[75%]">
-            <h1 className="text-base font-bold">Period Covered</h1>
-            <div className="flex lg:flex-row flex-col">
-              <label className="form-control w-full max-w-xs mx-3">
+        <div className="flex flex-col border-2 border-solid rounded-2xl m-2">
+          <div className="flex flex-col lg:flex-row w-full">
+            <div className="flex flex-col w-full lg:w-[65%] lg:border-r-2 py-5 px-8">
+              <h1 className="text-base font-bold">Period Covered</h1>
+              <div className="flex lg:flex-row flex-col gap-2">
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium text-sm">
+                      Date From
+                    </span>
+                  </div>
+                  <input
+                    type="date"
+                    className="input input-bordered w-full w-full"
+                    name="From"
+                    onChange={(e) => {
+                      onDateChange(e);
+                    }}
+                    disabled={!dateEnable}
+                  />
+                </label>
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium text-sm">
+                      Date To
+                    </span>
+                  </div>
+                  <input
+                    type="date"
+                    className="input input-bordered w-full"
+                    name="To"
+                    onChange={(e) => {
+                      onDateChange(e);
+                    }}
+                    disabled={!dateEnable}
+                  />
+                </label>
+              </div>
+              <label className="form-control w-full">
                 <div className="label">
                   <span className="label-text font-medium text-sm">
-                    Date From
+                    Payment Date
                   </span>
                 </div>
                 <input
                   type="date"
-                  className="input input-bordered w-full max-w-xs"
+                  className="input input-bordered w-full lg:w-1/2"
+                  name="Payment"
                   onChange={(e) => {
-                    setDates((prevPayrollDate) => ({
-                      ...prevPayrollDate,
-                      From: e.target.value,
-                    }));
+                    onDateChange(e);
                   }}
-                />
-              </label>
-              <label className="form-control w-full max-w-xs mx-3">
-                <div className="label">
-                  <span className="label-text font-medium text-sm">
-                    Date To
-                  </span>
-                </div>
-                <input
-                  type="date"
-                  className="input input-bordered w-full max-w-xs"
-                  onChange={(e) => {
-                    setDates((prevPayrollDate) => ({
-                      ...prevPayrollDate,
-                      To: e.target.value,
-                    }));
-                  }}
+                  disabled={!dateEnable}
                 />
               </label>
             </div>
-            <label className="form-control w-full max-w-xs mx-3">
-              <div className="label">
-                <span className="label-text font-medium text-sm">
-                  Payment Date
-                </span>
-              </div>
-              <input
-                type="date"
-                className="input input-bordered w-full max-w-xs"
-                onChange={(e) => {
-                  setDates((prevPayrollDate) => ({
-                    ...prevPayrollDate,
-                    Payment: e.target.value,
-                  }));
-                }}
-              />
-            </label>
-          </div>
-          <div className="divider md:divider-vertical lg:divider-horizontal "></div>
-          <div className="flex flex-col  container lg:w-[25%] ">
-            <label
-              htmlFor="uploadFile1"
-              className="btn bg-[#426E80] btn-wide shadow-md px-2 lg:px-4 m-2 my-2 text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 mr-2 fill-white inline"
-                viewBox="0 0 32 32"
-              >
-                <path
-                  d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
-                  data-original="#000000"
-                />
-                <path
-                  d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
-                  data-original="#000000"
-                />
-              </svg>
-              Upload Payroll File
-              <input
-                type="file"
-                accept=".xlsx, .xls, .csv"
-                onChange={uploadFile}
-                id="uploadFile1"
-                className="hidden"
-                name="csvFile"
-              />
-            </label>
-            <button
-              type="button"
-              className="btn bg-[#5C9CB7] btn-wide shadow-md px-4 m-2 "
-              onClick={generatePDF}
-            >
-              Generate & Send Payslip
-            </button>
-          </div>
-        </form>
+            <div className="flex flex-col w-full lg:w-[35%]">
+              <div className="flex flex-col w-full px-3 py-5 gap-5">
+                <label
+                  htmlFor="uploadFile1"
+                  className={
+                    uploadEnable
+                      ? "btn bg-[#426E80] shadow-md w-full text-white hover:bg-[#AAE2EC] hover:text-[#426E80]"
+                      : "btn btn-disabled"
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 mr-2 fill-white inline"
+                    viewBox="0 0 32 32"
+                  >
+                    <path
+                      d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
+                      data-original="#000000"
+                    />
+                    <path
+                      d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
+                      data-original="#000000"
+                    />
+                  </svg>
+                  Upload Payroll File
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls, .csv"
+                    onChange={uploadFile}
+                    id="uploadFile1"
+                    className="hidden"
+                    name="csvFile"
+                    disabled={!uploadEnable}
+                  />
+                </label>
 
-        <div className="mx-10">
+                <button
+                  type="button"
+                  className="btn bg-[#5C9CB7] shadow-md w-full"
+                  onClick={generatePDF}
+                  disabled={!sendEnable}
+                >
+                  Generate & Send Payslip
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="m-2">
           <h1 className="py-5 text-l font-bold">Payroll File</h1>
           <div className="border-2 border-gray-200 border-solid rounded-lg flex flex-row">
             {dataUploaded.length > 0 ? (
@@ -535,4 +593,3 @@ function TsekpayRun() {
 }
 
 export default TsekpayRun;
-
