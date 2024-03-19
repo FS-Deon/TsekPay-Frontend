@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-import { checkAccountType, checkDateOfBirth, checkEmail, checkFirstName, checkLastName, checkMiddleName, checkPassword, formatDate, showAlert } from "../assets/global";
+import {
+  checkAccountType,
+  checkDateOfBirth,
+  checkEmail,
+  checkFirstName,
+  checkLastName,
+  checkMiddleName,
+  checkPassword,
+  formatDate,
+  showAlert,
+} from "../assets/global";
 
 const Profile = () => {
   const userData = JSON.parse(Cookies.get("userData"));
@@ -41,7 +51,10 @@ const Profile = () => {
     let status = "";
     let message = "";
     try {
-      let response = await axios.patch(`/account/edit/${accountData.id}`, accountData);
+      let response = await axios.patch(
+        `/account/edit/${accountData.id}`,
+        accountData
+      );
       if (response.status === 200) {
         status = "success";
         message = "Your account was updated successfully.";
@@ -401,7 +414,7 @@ const Profile = () => {
                 className="btn flex w-full bg-[#426E80] shadow-md text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
                 onClick={handleSubmit}
               >
-                Save
+                Update
               </button>
             </div>
           </div>

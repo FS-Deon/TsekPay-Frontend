@@ -47,18 +47,6 @@ function Register() {
     return `${year}-${month}-${day}`;
   };
 
-  const addAccount = async () => {
-    try {
-      response = await axios.post("/account", accountData);
-      if (response) {
-        console.log("TRUE");
-      }
-      setAccountData("");
-    } catch (error) {
-      console.error("Error adding account: ", error);
-    }
-  };
-
   const getAccounts = async () => {
     try {
       response = await axios.get("/account/view/");
@@ -70,13 +58,6 @@ function Register() {
     } catch (error) {
       console.error("Error viewing accounts: ", error);
     }
-  };
-
-  const onClickEdit = (rowId) => {
-    const selectedData = dataTable.find((row) => row.id === rowId);
-    setSelectedRow(selectedData);
-    setRowSelected(true);
-    console.log(selectedData);
   };
 
   const toggleDelete = (rowID) => {
@@ -221,12 +202,6 @@ function Register() {
                           accountID={row.id}
                           account={row}
                         />
-                        {/* <button
-                          onClick={() => onClickEdit(row.id)}
-                          className="btn btn-sm btn-edit bg-[#426E80] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80] w-20"
-                        >
-                          Edit
-                        </button> */}
                         <button
                           onClick={() => toggleDelete(row.id)}
                           className="btn btn-sm btn-danger bg-[#Cc0202] shadow-md px-4 my-2 text-white hover:bg-[#f7f7f7] hover:text-[#426E80]"
