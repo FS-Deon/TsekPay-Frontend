@@ -122,6 +122,7 @@ function ManageOrgs() {
       const rows = response.data.rows;
       // Check if response is not null before updating state
       if (rows) {
+        console.log("Data Retrieved:", rows);
         setDataTable(rows);
       }
     } catch (error) {
@@ -215,17 +216,6 @@ function ManageOrgs() {
     }
   };
 
-  const clickEdit = (rowId) => {
-    const selectedData = dataTable.find((row) => row.id === rowId);
-    setSelectedRow(selectedData);
-    setRowSelected(true);
-  };
-  const onClickClose = (rowId) => {
-    setSelectedRow("");
-    setRowSelected(false);
-    setSelectedImage(null);
-  };
-
   const deleteCompany = async (recordID) => {
     let status = "";
     let message = "";
@@ -277,6 +267,7 @@ function ManageOrgs() {
                   <th>ID</th>
                   <th>Logo</th>
                   <th>Name</th>
+                  <th>TIN</th>
                   <th>Address</th>
                   <th className="w-40">Actions</th>
                   {/* Add more columns based on your data structure */}
@@ -288,6 +279,7 @@ function ManageOrgs() {
                     <td>{row.id}</td>
                     <td>{row.logo}</td>
                     <td>{row.company_name}</td>
+                    <td>{row.tin}</td>
                     <td>{row.address}</td>
                     <td>
                       <div className="flex justify-between gap-2">

@@ -2,12 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   Login,
   Dashboard,
-  Register,
+  ManageAccounts,
   NonRecurring,
   ActivityLogs,
   TsekpayRun,
-  ManageOrgs,
+  ManageCompanies,
   PayItems,
+  Payslip,
 } from "./pages";
 import Layout from "./components/Layout";
 import axios from "axios";
@@ -15,15 +16,16 @@ import Cookies from "js-cookie";
 import Profile from "./pages/Profile";
 
 const getToken = () => {
-  let userData = (Cookies.get("userData") != undefined) ? Cookies.get("userData") : "";
-  if(userData != ""){
+  let userData =
+    Cookies.get("userData") != undefined ? Cookies.get("userData") : "";
+  if (userData != "") {
     return JSON.parse(Cookies.get("userData")).token;
   }
   return "";
 };
 
 axios.defaults.baseURL = "http://localhost:3000/";
-axios.defaults.headers.common['Authorization'] = getToken();
+axios.defaults.headers.common["Authorization"] = getToken();
 
 function App() {
   return (
@@ -35,13 +37,14 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/accounts" element={<ManageAccounts />} />
               <Route path="/non-recurring" element={<NonRecurring />} />
               <Route path="/activity-logs" element={<ActivityLogs />} />
               <Route path="/tsekpay-run" element={<TsekpayRun />} />
-              <Route path="/manage-organizations" element={<ManageOrgs />} />
+              <Route path="/companies" element={<ManageCompanies />} />
               <Route path="/manage-pay-items" element={<PayItems />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/payslip" element={<Payslip />} />
             </Route>
           </Routes>
         </BrowserRouter>
