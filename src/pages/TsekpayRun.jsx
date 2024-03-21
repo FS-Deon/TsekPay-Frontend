@@ -216,7 +216,7 @@ function TsekpayRun() {
         categoryTotal[category] = item["Total " + category];
         categoryList.forEach((clItem) => {
           // Check if item value for is undefined
-          if (item[clItem] !== undefined) {
+          if (item[clItem] !== undefined && item[clItem] > 0) {
             categoryObject[clItem] = item[clItem]; // Put payitem to respective category
             delete item[clItem];
           }
