@@ -6,6 +6,7 @@ import AddForm from "../components/pay-items/AddForm.jsx";
 import EditForm from "../components/pay-items/EditForm.jsx";
 import DropdownCompany from "../components/DropdownCompany.jsx";
 import Swal from "sweetalert2";
+import NoCompanySelected from "../components/NoCompanySelected";
 
 function PayItems() {
   let response;
@@ -132,7 +133,12 @@ function PayItems() {
               <h1 className="text-3xl font-bold">Pay Items</h1>
             </div>
             <div className="flex flex-col w-full items-end md:items-start">
-              <AddForm comp_id={companyID} action={()=>{getPayItems(companyID)}}></AddForm>
+              <AddForm
+                comp_id={companyID}
+                action={() => {
+                  getPayItems(companyID);
+                }}
+              ></AddForm>
             </div>
           </div>
           <div className="flex-col">
@@ -163,7 +169,9 @@ function PayItems() {
                         <EditForm
                           payItemID={row.id}
                           payItemData={row}
-                          action={()=>{getPayItems(companyID)}}
+                          action={() => {
+                            getPayItems(companyID);
+                          }}
                         ></EditForm>
                         <button
                           onClick={() => toggleDelete(row.id)}
@@ -179,7 +187,7 @@ function PayItems() {
               </tbody>
             </table>
           ) : (
-            <h1 className="m-auto">No Company selected</h1>
+            <NoCompanySelected />
           )}
         </div>
       </div>

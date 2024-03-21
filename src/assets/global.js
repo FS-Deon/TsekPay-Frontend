@@ -74,8 +74,8 @@ const checkPassword = (value, isEdit = false) => {
 
   let error = "";
 
-  if(isEdit){
-    if(value == "") return error;
+  if (isEdit) {
+    if (value == "") return error;
   }
 
   if (value == "") {
@@ -137,6 +137,14 @@ const checkCompanyName = (value) => {
   return error;
 };
 
+const checkCompanyTIN = (value) => {
+  let error = "";
+  if (value == "") {
+    error = "TIN is required";
+  }
+  return error;
+};
+
 const checkAddress = (value) => {
   let error = "";
   if (value == "") {
@@ -188,5 +196,6 @@ export {
   checkCategoryName,
   formatDate,
   checkCompanyName,
+  checkCompanyTIN,
   checkAddress
 };

@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { checkAddress, checkCompanyName, showAlert } from "../assets/global";
 import Swal from "sweetalert2";
-import AddForm from "../components/organizations/AddForm";
-import EditForm from "../components/organizations/EditForm";
+import AddForm from "../components/companies/AddForm";
+import EditForm from "../components/companies/EditForm";
 
-function ManageOrgs() {
+function ManageCompanies() {
   const navigate = useNavigate();
   let response;
 
@@ -20,7 +20,6 @@ function ManageOrgs() {
   };
   const [formData, setFormData] = useState(data);
   const [errors, setErrors] = useState(data);
-
   //toggle button for submit
   const handleSubmit = async (e, isEdit = false) => {
     e.preventDefault();
@@ -98,7 +97,7 @@ function ManageOrgs() {
       let response = await axios.post("/company", formData);
       if (response.status === 200) {
         status = "success";
-        message = "Organization was added successfully.";
+        message = "Companies was added successfully.";
         // props.action();
         getCompanies(accountID);
         setFormData(data);
@@ -245,7 +244,7 @@ function ManageOrgs() {
           <div className="flex w-full">
             <div className="flex-col w-full">
               <h1 className="text-3xl font-bold tracking-wide">
-                Manage Organization
+                Manage Companies
               </h1>
             </div>
             <div className="flex flex-col w-full items-end">
@@ -277,7 +276,7 @@ function ManageOrgs() {
                 {dataTable.map((row) => (
                   <tr key={row.id}>
                     <td>{row.id}</td>
-                    <td>{row.logo}</td>
+                    <td><img src={row.logo} alt={row.company_name+" Logo"} className="m-0 p-0 h-[50px] w-[50px]"/></td>
                     <td>{row.company_name}</td>
                     <td>{row.tin}</td>
                     <td>{row.address}</td>
@@ -315,4 +314,4 @@ function ManageOrgs() {
   );
 }
 
-export default ManageOrgs;
+export default ManageCompanies;
