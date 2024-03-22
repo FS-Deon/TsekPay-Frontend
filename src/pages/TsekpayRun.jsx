@@ -211,6 +211,16 @@ function TsekpayRun() {
     return appended;
   };
 
+  const addCommasAndFormatDecimal = (number) => {
+    if (typeof number == "number") {
+      let parts = number.toFixed(2).toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }else{
+      return number;
+    }
+  };
+
   // Groups Pay Items into categories and store it in Pay Items objext
   // Gets Total per category and put it in Totals object
   const processData = (data) => {
@@ -227,7 +237,8 @@ function TsekpayRun() {
         categoryList.forEach((clItem) => {
           // Check if item value for is undefined
           if (item[clItem] !== undefined && item[clItem] > 0) {
-            categoryObject[clItem] = item[clItem].toFixed(2); // Put payitem to respective category
+            // categoryObject[clItem] = item[clItem].toFixed(2); // Put payitem to respective category
+            categoryObject[clItem] = addCommasAndFormatDecimal(item[clItem]); 
           }
           delete item[clItem];
         });
@@ -236,7 +247,9 @@ function TsekpayRun() {
       });
       item["Pay Items"] = payItems;
       item["Totals"] = categoryTotal;
-      item["Net Pay"] = item["Net Pay"].toFixed(2);
+      // item["Net Pay"] = item["Net Pay"].toFixed(2);
+      item["Net Pay"] = addCommasAndFormatDecimal(item["Net Pay"]);
+
     });
     console.log("Processed Data: ", data);
     return data;
@@ -498,7 +511,7 @@ function TsekpayRun() {
                                 rowClick(row["Employee ID"], dataProcessed)
                               }
                             >
-                              {value}
+                              {addCommasAndFormatDecimal(value)}
                             </button>
                           </td>
                         ))}
@@ -559,6 +572,14 @@ function TsekpayRun() {
                 {selectedRow.Dates["Payment"]}
               </div>
             </div>
+            <div className="flex flex-row justify-between mt-2">
+              <div className="w-full font-bold">
+                {selectedRow["Job Title"]}
+              </div>
+              <div className="w-full text-end">
+                
+              </div>
+            </div>
           </div>
           <div className="flex flex-row px-5 pb-5">
             <div className="flex flex-col lg:flex-row w-full">
@@ -584,7 +605,7 @@ function TsekpayRun() {
                             key={payItem}
                           >
                             <h1 className="mx-3 mt-3 pl-10">{payItem}</h1>
-                            <h1 className="mx-3 mt-3">{amount.toFixed(2)}</h1>
+                            <h1 className="mx-3 mt-3">{amount}</h1>
                           </div>
                         </>
                       ))}
@@ -594,7 +615,7 @@ function TsekpayRun() {
                           Total {category}
                         </h1>
                         <h1 className="mx-3 mt-3">
-                          {selectedRow["Totals"][category].toFixed(2)}
+                          {selectedRow["Totals"][category]}
                         </h1>
                       </div>
                       <hr className="mt-1 border h-[5px] bg-[#000000]"></hr>
@@ -604,9 +625,7 @@ function TsekpayRun() {
 
                 <div className="flex flex-row justify-between border-t-3">
                   <h1 className="font-bold mx-3 mt-3">Take Home Pay</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Net Pay"].toFixed(2)}
-                  </h1>
+                  <h1 className="mx-3 mt-3">{selectedRow["Net Pay"]}</h1>
                 </div>
                 {/* <hr className="mt-1 border h-[5px] bg-[#000000]"></hr> */}
               </div>
