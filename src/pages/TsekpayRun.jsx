@@ -75,11 +75,20 @@ function TsekpayRun() {
   // Set pay items based on company selected
   const setCompanyPayItem = (id) => {
     const info = {};
+
+    if (id == "") {
+      setDateEnable(false);
+      setUploadEnable(false);
+      setSendEnable(false);
+      return;
+    }
+    setDateEnable(true);
+
     // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
     console.log(data);
-    const { company_name, address } = data[0];
-    setCompanyInfo({ company_name, address });
+    const { company_name, address, tin, logo } = data[0];
+    setCompanyInfo({ company_name, address, tin, logo });
     // Transform to category object
     const categoryPayItem = data.reduce((acc, item) => {
       const { category, name } = item;
@@ -110,6 +119,7 @@ function TsekpayRun() {
       "First Name",
       "Middle Name",
       "Email",
+      "Job Title",
       "Net Pay",
     ]);
     const totalCategory = [];
@@ -162,7 +172,7 @@ function TsekpayRun() {
     if (selectedCompany != null) {
       setCompanyPayItem(selectedCompany);
       setCompanyID(selectedCompany);
-      setDateEnable(true);
+      // setDateEnable(true);
     }
   };
 
@@ -201,6 +211,16 @@ function TsekpayRun() {
     return appended;
   };
 
+  const addCommasAndFormatDecimal = (number) => {
+    if (typeof number == "number") {
+      let parts = number.toFixed(2).toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }else{
+      return number;
+    }
+  };
+
   // Groups Pay Items into categories and store it in Pay Items objext
   // Gets Total per category and put it in Totals object
   const processData = (data) => {
@@ -213,19 +233,23 @@ function TsekpayRun() {
         const categoryList = categories[category]; // Get categories
         const categoryObject = {};
         // Iterate in category list
-        categoryTotal[category] = item["Total " + category];
+        categoryTotal[category] = item["Total " + category].toFixed(2);
         categoryList.forEach((clItem) => {
           // Check if item value for is undefined
-          if (item[clItem] !== undefined) {
-            categoryObject[clItem] = item[clItem]; // Put payitem to respective category
-            delete item[clItem];
+          if (item[clItem] !== undefined && item[clItem] > 0) {
+            // categoryObject[clItem] = item[clItem].toFixed(2); // Put payitem to respective category
+            categoryObject[clItem] = addCommasAndFormatDecimal(item[clItem]); 
           }
+          delete item[clItem];
         });
         delete item[`Total ` + category];
         payItems[category] = categoryObject;
       });
       item["Pay Items"] = payItems;
       item["Totals"] = categoryTotal;
+      // item["Net Pay"] = item["Net Pay"].toFixed(2);
+      item["Net Pay"] = addCommasAndFormatDecimal(item["Net Pay"]);
+
     });
     console.log("Processed Data: ", data);
     return data;
@@ -296,16 +320,6 @@ function TsekpayRun() {
     }));
 
     let counter = 0;
-    // test();
-    // if (name == "From") {
-    //   console.log(Dates);
-    // }
-    // if (name == "To") {
-    //   console.log(Dates);
-    // }
-    // if (name == "Payment") {
-    //   console.log(Dates);
-    // }
   };
 
   useEffect(() => {
@@ -497,7 +511,7 @@ function TsekpayRun() {
                                 rowClick(row["Employee ID"], dataProcessed)
                               }
                             >
-                              {value}
+                              {addCommasAndFormatDecimal(value)}
                             </button>
                           </td>
                         ))}
@@ -558,6 +572,14 @@ function TsekpayRun() {
                 {selectedRow.Dates["Payment"]}
               </div>
             </div>
+            <div className="flex flex-row justify-between mt-2">
+              <div className="w-full font-bold">
+                {selectedRow["Job Title"]}
+              </div>
+              <div className="w-full text-end">
+                
+              </div>
+            </div>
           </div>
           <div className="flex flex-row px-5 pb-5">
             <div className="flex flex-col lg:flex-row w-full">
@@ -583,7 +605,7 @@ function TsekpayRun() {
                             key={payItem}
                           >
                             <h1 className="mx-3 mt-3 pl-10">{payItem}</h1>
-                            <h1 className="mx-3 mt-3">{amount.toFixed(2)}</h1>
+                            <h1 className="mx-3 mt-3">{amount}</h1>
                           </div>
                         </>
                       ))}
@@ -593,7 +615,7 @@ function TsekpayRun() {
                           Total {category}
                         </h1>
                         <h1 className="mx-3 mt-3">
-                          {selectedRow["Totals"][category].toFixed(2)}
+                          {selectedRow["Totals"][category]}
                         </h1>
                       </div>
                       <hr className="mt-1 border h-[5px] bg-[#000000]"></hr>
@@ -603,9 +625,7 @@ function TsekpayRun() {
 
                 <div className="flex flex-row justify-between border-t-3">
                   <h1 className="font-bold mx-3 mt-3">Take Home Pay</h1>
-                  <h1 className="mx-3 mt-3">
-                    {selectedRow["Net Pay"].toFixed(2)}
-                  </h1>
+                  <h1 className="mx-3 mt-3">{selectedRow["Net Pay"]}</h1>
                 </div>
                 {/* <hr className="mt-1 border h-[5px] bg-[#000000]"></hr> */}
               </div>
