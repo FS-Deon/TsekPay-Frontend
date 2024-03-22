@@ -75,6 +75,15 @@ function TsekpayRun() {
   // Set pay items based on company selected
   const setCompanyPayItem = (id) => {
     const info = {};
+
+    if (id == "") {
+      setDateEnable(false);
+      setUploadEnable(false);
+      setSendEnable(false);
+      return;
+    }
+    setDateEnable(true);
+
     // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
     console.log(data);
@@ -163,7 +172,7 @@ function TsekpayRun() {
     if (selectedCompany != null) {
       setCompanyPayItem(selectedCompany);
       setCompanyID(selectedCompany);
-      setDateEnable(true);
+      // setDateEnable(true);
     }
   };
 
