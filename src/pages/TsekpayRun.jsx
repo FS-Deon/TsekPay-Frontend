@@ -78,8 +78,8 @@ function TsekpayRun() {
     // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
     console.log(data);
-    const { company_name, address } = data[0];
-    setCompanyInfo({ company_name, address });
+    const { company_name, address, tin, logo } = data[0];
+    setCompanyInfo({ company_name, address, tin, logo });
     // Transform to category object
     const categoryPayItem = data.reduce((acc, item) => {
       const { category, name } = item;
@@ -110,6 +110,7 @@ function TsekpayRun() {
       "First Name",
       "Middle Name",
       "Email",
+      "Job Title",
       "Net Pay",
     ]);
     const totalCategory = [];
@@ -213,19 +214,20 @@ function TsekpayRun() {
         const categoryList = categories[category]; // Get categories
         const categoryObject = {};
         // Iterate in category list
-        categoryTotal[category] = item["Total " + category];
+        categoryTotal[category] = item["Total " + category].toFixed(2);
         categoryList.forEach((clItem) => {
           // Check if item value for is undefined
           if (item[clItem] !== undefined && item[clItem] > 0) {
-            categoryObject[clItem] = item[clItem]; // Put payitem to respective category
-            delete item[clItem];
+            categoryObject[clItem] = item[clItem].toFixed(2); // Put payitem to respective category
           }
+          delete item[clItem];
         });
         delete item[`Total ` + category];
         payItems[category] = categoryObject;
       });
       item["Pay Items"] = payItems;
       item["Totals"] = categoryTotal;
+      item["Net Pay"] = item["Net Pay"].toFixed(2);
     });
     console.log("Processed Data: ", data);
     return data;
@@ -296,16 +298,6 @@ function TsekpayRun() {
     }));
 
     let counter = 0;
-    // test();
-    // if (name == "From") {
-    //   console.log(Dates);
-    // }
-    // if (name == "To") {
-    //   console.log(Dates);
-    // }
-    // if (name == "Payment") {
-    //   console.log(Dates);
-    // }
   };
 
   useEffect(() => {
