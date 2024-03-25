@@ -33,7 +33,7 @@ function TsekpayRun() {
   const accountID = JSON.parse(userData).id;
 
   const [companyID, setCompanyID] = useState(null);
-  const [companyInfo, setCompanyInfo] = useState({}); // Contains company name and address
+  const [companyInfo, setCompanyInfo] = useState({}); // Contains company name, address, and Logo
   const [dbCategoryPayItem, setDatabase] = useState([]); // Contains all pay items for the current user
   const [categories, setCategories] = useState([]); // Categories(per company)
   const [reqInfo, setReqInfo] = useState([]); // Required Column Headers
@@ -86,7 +86,6 @@ function TsekpayRun() {
 
     // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
-    console.log(data);
     const { company_name, address, tin, logo } = data[0];
     setCompanyInfo({ company_name, address, tin, logo });
     // Transform to category object
@@ -138,34 +137,48 @@ function TsekpayRun() {
   //Upload file and check if it has the same columns with required information
   const uploadFile = (e) => {
     const reader = new FileReader();
-    reader.readAsBinaryString(e.target.files[0]);
-    reader.onload = (e) => {
-      const data = e.target.result;
-
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const parsedData = XLSX.utils.sheet_to_json(sheet);
-      const headers = Object.keys(parsedData[0]);
-
-      // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
-      const areEqual =
-        JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort());
-      console.log("Headers: ", headers);
-      console.log("Required Info: ", reqInfo);
-      if (areEqual) {
-        //Notification for successful upload
-        toast.success("File Upload Successfully!", { autoClose: 3000 });
-        setDataUploaded(parsedData);
-        const dateAppended = appendDate(parsedData);
-        const processedData = processData(dateAppended);
-        setProcessedData(processedData);
-        setSendEnable(true);
-      } else {
-        //Notification for failed upload
-        toast.success("File Upload Failed!", { autoClose: 3000 });
-      }
-    };
+    const file = e.target.files[0]
+    const fileName = file.name;
+    console.log("Upload: ", fileName);
+    console.log("Company Name: ", companyInfo.company_name)
+    if(fileName.includes(companyInfo.company_name)){
+      reader.readAsBinaryString(file);
+      reader.onload = (e) => {
+        const data = e.target.result;
+  
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const parsedData = XLSX.utils.sheet_to_json(sheet);
+        const headers = Object.keys(parsedData[0]);
+  
+        // Check if required information is equal to the the spreadsheet headers, sort them to make them have same content order
+        const areEqual =
+          JSON.stringify(headers.sort()) === JSON.stringify(reqInfo.sort());
+        console.log("Headers: ", headers);
+        console.log("Required Info: ", reqInfo);
+        if (areEqual) {
+          //Notification for successful upload
+          toast.success("File Upload Successfully!", { autoClose: 3000 });
+          setDataUploaded(parsedData);
+          const dateAppended = appendDate(parsedData);
+          const processedData = processData(dateAppended);
+          setProcessedData(processedData);
+          setSendEnable(true);
+        } else {
+          //Notification for failed upload
+          toast.success("File Upload Failed!", { autoClose: 3000 });
+        }
+      };
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "File Upload Failed",
+        text: "File Name Should Contain Company Name",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
   };
 
   const companyChange = (selectedCompany) => {
@@ -394,7 +407,7 @@ function TsekpayRun() {
                   </div>
                   <input
                     type="date"
-                    className="input input-bordered w-full w-full"
+                    className="input input-bordered w-full"
                     name="From"
                     onChange={(e) => {
                       onDateChange(e);
