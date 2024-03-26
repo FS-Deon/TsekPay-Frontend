@@ -6,6 +6,7 @@ import axios from "axios";
 //Components
 import DropdownCompany from "../components/DropdownCompany";
 import NoCompanySelected from "../components/NoCompanySelected";
+import NoRecrodFound from "../components/NoRecordFound";
 
 function Payslip() {
   const navigate = useNavigate();
@@ -71,9 +72,9 @@ function Payslip() {
           </div>
         </div>
 
-        <div className="mt-5 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
-          {companyID && dataTable ? (
-            <table border="1" className="table  min-w-[800px]">
+        <div className="mt-5 p-2 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
+          {companyID && (dataTable.length > 0) ? (
+            <table border="1" className="table w-[1200px]">
               <thead>
                 <tr>
                   <th>Employee ID</th>
@@ -82,6 +83,7 @@ function Payslip() {
                   <th>Payables</th>
                   <th>Totals</th>
                   <th>Net Salary</th>
+                  <th>Date Generated</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,9 +122,9 @@ function Payslip() {
                         <div key={payableKey}>
                           <p className="mt-2 font-bold">{payableKey}:</p>
                           {Object.entries(payableValue).map(([key, value]) => (
-                            <div key={key}>
-                              <p className="indent-3 font-bold">{key}: <br/></p>
-                              <p className="indent-5">{value}</p>
+                            <div className="indent-3 " key={key}>
+                              <span className="font-bold">{key}: </span>
+                              <span className="">{value}</span>
                             </div>
                           ))}
                         </div>
@@ -131,23 +133,24 @@ function Payslip() {
                     <td>
                       {Object.keys(row.totals).map((key) => (
                         <div key = {key}>
-                          <p className="font-bold">
-                            {key} : <br/>
-                          </p>
-                          <p className="indent-3">
+                          <span className="font-bold">
+                            {key} :
+                          </span>
+                          <span>
                             {row.totals[key]}
-                          </p>
+                          </span>
                         </div>
                       ))}
                     </td>
                     <td>{row.net_salary}</td>
+                    <td>{row.created_at}</td>
                     {/* Add more cells based on your data structure */}
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <NoCompanySelected />
+            <NoRecrodFound />
           )}
         </div>
       </div>
