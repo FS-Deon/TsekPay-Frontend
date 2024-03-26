@@ -72,42 +72,60 @@ function TsekpayRun() {
     setSelectedRow(rowData);
   };
 
+  const disableDatePicker = () => {
+    setDateEnable(false);
+    setUploadEnable(false);
+    setSendEnable(false);
+  };
+
   // Set pay items based on company selected
   const setCompanyPayItem = (id) => {
     const info = {};
 
     if (id == "") {
-      setDateEnable(false);
-      setUploadEnable(false);
-      setSendEnable(false);
+      disableDatePicker();
       return;
     }
     setDateEnable(true);
 
     // Data from database
     const data = dbCategoryPayItem.filter((item) => item.company_id == id);
-    const { company_name, address, tin, logo } = data[0];
-    setCompanyInfo({ company_name, address, tin, logo });
-    // Transform to category object
-    const categoryPayItem = data.reduce((acc, item) => {
-      const { category, name } = item;
+    console.log("Datat: ", data)
+    if(data.length > 0){
+      setCompanyID(id);
+      const { company_name, address, tin, logo } = data[0];
+      setCompanyInfo({ company_name, address, tin, logo });
+      // Transform to category object
+      const categoryPayItem = data.reduce((acc, item) => {
+        const { category, name } = item;
+  
+        // Find the category array in the accumulator
+        const categoryArray = acc[category];
+  
+        if (categoryArray) {
+          // If the category exists, push the name to its array
+          categoryArray.push(name);
+        } else {
+          // If the category doesn't exist, create a new array
+          acc[category] = [name];
+        }
+  
+        return acc;
+      }, {});
+      setCategories(categoryPayItem);
+      setRequiredInformation(categoryPayItem);
+    } else {
+      disableDatePicker();
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No Pay Items Found!",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
+    
 
-      // Find the category array in the accumulator
-      const categoryArray = acc[category];
-
-      if (categoryArray) {
-        // If the category exists, push the name to its array
-        categoryArray.push(name);
-      } else {
-        // If the category doesn't exist, create a new array
-        acc[category] = [name];
-      }
-
-      return acc;
-    }, {});
-
-    setCategories(categoryPayItem);
-    setRequiredInformation(categoryPayItem);
   };
 
   // Set required information for updloaded data
@@ -167,7 +185,14 @@ function TsekpayRun() {
           setSendEnable(true);
         } else {
           //Notification for failed upload
-          toast.success("File Upload Failed!", { autoClose: 3000 });
+
+          Swal.fire({
+            icon: "error",
+            title: "File Upload Failed",
+            text: "File Must Contain Similar Pay Items!",
+            showConfirmButton: false,
+            timer: 3000,
+          });
         }
       };
     } else {
@@ -184,7 +209,7 @@ function TsekpayRun() {
   const companyChange = (selectedCompany) => {
     if (selectedCompany != null) {
       setCompanyPayItem(selectedCompany);
-      setCompanyID(selectedCompany);
+      
       // setDateEnable(true);
     }
   };
