@@ -5,6 +5,7 @@ import {
   checkAddress,
   checkCompanyName,
   checkCompanyTIN,
+  checkLogo,
   showAlert,
 } from "../../assets/global";
 
@@ -87,6 +88,18 @@ function AddForm(props) {
         setErrors({ ...errors, address: "" });
       }
     }
+
+    //sets error message for Logo input
+    if (name == "logo") {
+      if (checkLogo(value) != "") {
+        setErrors({
+          ...errors,
+          logo: checkLogo(value),
+        });
+      } else {
+        setErrors({ ...errors, logo: "" });
+      }
+    }
   };
 
   const isFormValid = async () => {
@@ -104,9 +117,9 @@ function AddForm(props) {
       newErrors.address = checkAddress(formData.address);
     }
 
-    // if (checkLastName(formData.logo) != "") {
-    //   newErrors.logo = checkLastName(formData.logo);
-    // }
+    if (checkLogo(formData.logo) != "") {
+      newErrors.logo = checkLogo(formData.logo);
+    }
 
     setErrors({ ...errors, ...newErrors });
 
