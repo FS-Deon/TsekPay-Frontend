@@ -203,7 +203,7 @@ function AddForm(props) {
               />
               <datalist id="category">
                 <option>Earnings</option>
-                <option>Deduction</option>
+                <option>Deductions</option>
               </datalist>
               {errors.category && (
                 <span className="text-[12px] text-red-500">
