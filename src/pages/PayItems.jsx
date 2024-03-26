@@ -6,7 +6,7 @@ import AddForm from "../components/pay-items/AddForm.jsx";
 import EditForm from "../components/pay-items/EditForm.jsx";
 import DropdownCompany from "../components/DropdownCompany.jsx";
 import Swal from "sweetalert2";
-import NoCompanySelected from "../components/NoCompanySelected";
+import NoRecordFound from "../components/NoRecordFound.jsx";
 
 function PayItems() {
   let response;
@@ -187,7 +187,7 @@ function PayItems() {
               </tbody>
             </table>
           ) : (
-            <NoCompanySelected />
+            <NoRecordFound />
           )}
         </div>
       </div>
