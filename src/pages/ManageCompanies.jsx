@@ -260,7 +260,7 @@ function ManageCompanies() {
 
         <div className="mt-5 p-3 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
           {dataTable ? (
-            <table border="1" className="table">
+            <table border="1" className="table min-w-[800px]">
               <thead>
                 <tr>
                   <th>ID</th>

@@ -152,6 +152,13 @@ const checkAddress = (value) => {
   }
   return error;
 };
+const checkLogo = (value) => {
+  let error = "";
+  if (value == "") {
+    error = "Logo is required";
+  }
+  return error;
+};
 
 const getAge = (dob) => {
   let year = dob.split("-")[0];
@@ -197,5 +204,6 @@ export {
   formatDate,
   checkCompanyName,
   checkCompanyTIN,
-  checkAddress
+  checkAddress,
+  checkLogo
 };
