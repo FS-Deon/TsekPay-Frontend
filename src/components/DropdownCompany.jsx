@@ -50,7 +50,7 @@ function DropdownCompany({companyID}){
                     className="select select-bordered w-52"
                     onChange={(e) => dropdownChange(e.target.value)}
                 >
-                    <option value="">None</option>
+                    <option value="">Select Company</option>
                     {dataTable.map((rows) => (
                     <option key={rows.id} id={rows.id} value={rows.id}>
                         {rows.company_name}
