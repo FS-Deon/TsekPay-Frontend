@@ -512,7 +512,7 @@ function TsekpayRun() {
 
                 <button
                   type="button"
-                  className="btn bg-[#5C9CB7] shadow-md w-full"
+                  className="btn text-white bg-[#5C9CB7] shadow-md w-full"
                   onClick={sendData}
                   disabled={!sendEnable}
                 >

@@ -74,7 +74,7 @@ function Payslip() {
 
         <div className="mt-5 p-2 border-2 border-gray-200 border-solid rounded-lg flex flex-1 flex-col overflow-x-auto">
           {companyID && (dataTable.length > 0) ? (
-            <table border="1" className="table w-[1200px]">
+            <table border="1" className="table min-w-[1200px]">
               <thead>
                 <tr>
                   <th>Employee ID</th>

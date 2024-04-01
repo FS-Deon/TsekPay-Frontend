@@ -218,7 +218,7 @@ function AddForm(props) {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} enctype="multipart/form-data">
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="flex flex-col w-full gap-2">
               {/* Company Name */}
               <div className="flex flex-col md:flex-row">
