@@ -38,12 +38,7 @@ function Payslip() {
       if (value_ID != null && value_ID != undefined && value_ID != "") {
         const token = getToken();
         const response = await axios.get(
-          `http://localhost:3000/payslip/view/${value_ID}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+          `/payslip/view/${value_ID}`
         );
         const rows = response.data.rows;
         // Check if response is not null before updating state

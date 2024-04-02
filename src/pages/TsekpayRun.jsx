@@ -217,11 +217,7 @@ function TsekpayRun() {
   const getCompanyPayItem = async (accountID) => {
     const token = getToken();
     await axios
-      .get(`http://localhost:3000/pay-item/data/${accountID}`, {
-        headers: {
-          Authorization: token,
-        },
-      })
+      .get(`/pay-item/data/${accountID}`)
       .then(function (response) {
         const rows = response.data.rows;
         if (rows) {
@@ -319,11 +315,7 @@ function TsekpayRun() {
 
     const token = getToken();
     await axios
-      .post(`http://localhost:3000/payslip`, data, {
-        headers: {
-          Authorization: token,
-        },
-      })
+      .post(`/payslip`, data)
       .then(function (response) {
         console.log("inserted");
       })

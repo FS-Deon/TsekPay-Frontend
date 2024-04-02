@@ -24,7 +24,7 @@ const getToken = () => {
   return "";
 };
 
-axios.defaults.baseURL = "http://localhost:3000/";
+axios.defaults.baseURL = "https://tsekpay-backend-c05c6ff983bf.herokuapp.com/";
 axios.defaults.headers.common["Authorization"] = getToken();
 
 function App() {
