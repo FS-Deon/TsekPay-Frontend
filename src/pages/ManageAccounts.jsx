@@ -96,7 +96,7 @@ function Register() {
     try {
       const token = getToken();
       const response = await axios.patch(
-        `http://localhost:3000/account/edit/${recordID}`,
+        `/account/edit/${recordID}`,
         selectedRow,
         {
           headers: {
@@ -124,7 +124,7 @@ function Register() {
     try {
       const token = getToken();
       response = await axios.delete(
-        `http://localhost:3000/account/remove/${recordID}`,
+        `/account/remove/${recordID}`,
         {
           headers: {
             Authorization: token,

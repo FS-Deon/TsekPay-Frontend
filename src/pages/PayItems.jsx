@@ -41,12 +41,7 @@ function PayItems() {
       if (value_ID != null && value_ID != undefined && value_ID != "") {
         const token = getToken();
         const response = await axios.get(
-          `http://localhost:3000/pay-item/view/${value_ID}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+          `/pay-item/view/${value_ID}`
         );
         const rows = response.data.rows;
         // Check if response is not null before updating state
@@ -88,12 +83,7 @@ function PayItems() {
     try {
       const token = getToken();
       response = await axios.delete(
-        `http://localhost:3000/pay-item/remove/${recordID}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
+        `/pay-item/remove/${recordID}`
       );
 
       if (response.status === 200) {

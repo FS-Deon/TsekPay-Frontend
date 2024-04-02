@@ -23,11 +23,7 @@ function DropdownCompany({companyID}){
     const getCompanies = async (accountID) => {
         try {
             const token = getToken();
-            const response = await axios.get(`http://localhost:3000/company/view/${accountID}`, {
-                headers: {
-                    Authorization: token,
-                },
-            });
+            const response = await axios.get(`/company/view/${accountID}`);
             const rows = response.data.rows;
             // Check if response is not null before updating state
             if (rows) {
