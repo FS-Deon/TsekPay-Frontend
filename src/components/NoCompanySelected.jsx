@@ -1,5 +1,5 @@
 import React from "react";
-import NoRecordUploaded from "./src/assets/records.svg";
+import NoRecordUploadedSVG from "./src/assets/records.svg";
 
 
 function NoCompanySelected() {
@@ -7,7 +7,7 @@ function NoCompanySelected() {
     <div className=" flex flex-col justify-center w-full p-10">
       <img
         className="h-[200px]"
-        src={NoRecordUploaded}
+        src={NoRecordUploadedSVG}
         alt="No Record Uploaded"
       />
       <div>
