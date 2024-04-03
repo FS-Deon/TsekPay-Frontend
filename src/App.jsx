@@ -1,56 +1,35 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {
-  Login,
-  Dashboard,
-  ManageAccounts,
-  NonRecurring,
-  ActivityLogs,
-  TsekpayRun,
-  ManageCompanies,
-  PayItems,
-  Payslip,
-} from "./pages";
-import Layout from "./components/Layout";
-import axios from "axios";
-import Cookies from "js-cookie";
-import Profile from "./pages/Profile";
-
-const getToken = () => {
-  let userData =
-    Cookies.get("userData") != undefined ? Cookies.get("userData") : "";
-  if (userData != "") {
-    return JSON.parse(Cookies.get("userData")).token;
-  }
-  return "";
-};
-
-axios.defaults.baseURL = "https://tsekpay-backend-c05c6ff983bf.herokuapp.com/";
-axios.defaults.headers.common["Authorization"] = getToken();
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
     <>
       <div>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Login />} />
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/accounts" element={<ManageAccounts />} />
-              <Route path="/non-recurring" element={<NonRecurring />} />
-              <Route path="/activity-logs" element={<ActivityLogs />} />
-              <Route path="/tsekpay-run" element={<TsekpayRun />} />
-              <Route path="/companies" element={<ManageCompanies />} />
-              <Route path="/manage-pay-items" element={<PayItems />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/payslip" element={<Payslip />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <a href="https://vitejs.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
       </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
