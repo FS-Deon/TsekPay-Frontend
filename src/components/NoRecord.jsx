@@ -1,5 +1,5 @@
 import React from 'react'
-import NoRecordSVG from "./src/assets/records.svg"
+import NoRecordSVG from "../assets/records.svg"
 
 function NoRecord() {
   return (

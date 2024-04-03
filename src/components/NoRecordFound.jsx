@@ -1,5 +1,5 @@
 import React from "react";
-import NoRecordSVG from "./src/assets/no_data.svg";
+import NoRecordSVG from "../assets/no_data.svg";
 
 function NoCompanySelected() {
   return (
