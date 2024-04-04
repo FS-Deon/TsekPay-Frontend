@@ -12,7 +12,7 @@ import {
   checkPassword,
   formatDate,
   showAlert,
-} from "../assets/global";
+} from "../../assets/global";
 
 const Profile = () => {
   const userData = JSON.parse(Cookies.get("userData"));

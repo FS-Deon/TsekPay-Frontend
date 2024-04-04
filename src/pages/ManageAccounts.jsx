@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import Sidebar from "../components/Sidebar.jsx";
+import Sidebar from "../components/sidebar/Sidebar.jsx";
 import BackButton from "../components/BackButton.jsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";

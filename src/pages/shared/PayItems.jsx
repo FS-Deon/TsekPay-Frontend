@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-import AddForm from "../components/pay-items/AddForm.jsx";
-import EditForm from "../components/pay-items/EditForm.jsx";
-import DropdownCompany from "../components/DropdownCompany.jsx";
+import AddForm from "../../components/pay-items/AddForm.jsx";
+import EditForm from "../../components/pay-items/EditForm.jsx";
+import DropdownCompany from "../../components/DropdownCompany.jsx";
 import Swal from "sweetalert2";
-import NoRecordFound from "../components/NoRecordFound.jsx";
+import NoRecordFound from "../../components/NoRecordFound.jsx";
 
 function PayItems() {
   let response;

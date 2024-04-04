@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "./sidebar/Sidebar";
 import Header from "../components/Header";
 import Cookies from "js-cookie";
 import { Outlet, useNavigate } from "react-router-dom";

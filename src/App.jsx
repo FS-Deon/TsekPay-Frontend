@@ -3,17 +3,16 @@ import {
   Login,
   Dashboard,
   ManageAccounts,
-  NonRecurring,
   ActivityLogs,
-  TsekpayRun,
   ManageCompanies,
   PayItems,
   Payslip,
+  Profile,
+  TsekpayRun,
 } from "./pages";
 import Layout from "./components/Layout";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Profile from "./pages/Profile";
 
 const getToken = () => {
   let userData =
@@ -33,12 +32,14 @@ function App() {
       <div>
         <BrowserRouter>
           <Routes>
+            {/* Public routes accessible to all users */}
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Login />} />
+
+            {/* Protected routes requiring authentication */}
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/accounts" element={<ManageAccounts />} />
-              <Route path="/non-recurring" element={<NonRecurring />} />
               <Route path="/activity-logs" element={<ActivityLogs />} />
               <Route path="/tsekpay-run" element={<TsekpayRun />} />
               <Route path="/companies" element={<ManageCompanies />} />

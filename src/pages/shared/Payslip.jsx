@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 //Components
-import DropdownCompany from "../components/DropdownCompany";
-import NoCompanySelected from "../components/NoCompanySelected";
-import NoRecrodFound from "../components/NoRecordFound";
+import DropdownCompany from "../../components/DropdownCompany";
+import NoCompanySelected from "../../components/NoCompanySelected";
+import NoRecrodFound from "../../components/NoRecordFound";
 
 function Payslip() {
   const navigate = useNavigate();
