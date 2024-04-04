@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import NoRecord from "../components/NoRecord";
+import NoRecord from "../../components/NoRecord.jsx";
 import * as XLSX from "xlsx";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import DropdownCompany from "../components/DropdownCompany.jsx";
+import DropdownCompany from "../../components/DropdownCompany.jsx";
 import Swal from "sweetalert2";
 function TsekpayRun() {
   let rowData = {
