@@ -333,7 +333,7 @@ function TsekpayRun() {
 
     //date with decimal places with comma
     await axios
-      .post(`http://localhost:5000/generate-and-send`, data, {
+      .post(`https://pdf-generation-test.onrender.com/generate-and-send`, data, {
         headers: {
           Authorization: token,
         },
